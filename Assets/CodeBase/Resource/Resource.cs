@@ -30,9 +30,10 @@ namespace CodeBase.Resource
             Dissapear?.Invoke(this);
         }
 
-        public void Interact()
+        public void Interact(Transform parent)
         {
-            Debug.Log($"{_name} was Interacted");
+            transform.SetParent(parent);
+            transform.position = parent.position;
         }
 
         public void Restart()

@@ -12,6 +12,7 @@ namespace CodeBase.Unit.StateMachine
         {
             base.Enter();
             Unit.View.StartMining();
+            Unit.Miner.StartMining();
         }
 
         public override void Exit()

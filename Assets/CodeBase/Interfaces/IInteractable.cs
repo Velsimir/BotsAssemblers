@@ -1,7 +1,9 @@
+using UnityEngine;
+
 namespace CodeBase.Interfaces
 {
     public interface IInteractable
     {
-        void Interact();
+        void Interact(Transform transform);
     }
 }

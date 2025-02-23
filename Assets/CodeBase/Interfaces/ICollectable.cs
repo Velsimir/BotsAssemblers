@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CodeBase.Interfaces
 {
     public interface ICollectable

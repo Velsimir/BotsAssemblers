@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026de319ee4674a60fcd3f371c1b9e, type: 3}
   m_Name: BaseData
   m_EditorClassIdentifier: 
-  _unitPrefab: {fileID: 4907966638811798026, guid: 49fbb60edc1949444b6f313e23b373e4, type: 3}
+  _unitPrefab: {fileID: 1755877991484954097, guid: 49fbb60edc1949444b6f313e23b373e4, type: 3}
   _countOfInitialUnits: 3
   _radiusToSearchResources: 100
   _scanDelay: 5
