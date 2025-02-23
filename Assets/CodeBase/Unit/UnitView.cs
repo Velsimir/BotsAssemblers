@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CodeBase.Unit
 {
-    public class UnitView : MonoBehaviour
+    public class UnitView
     {
         private const string IsIdling = "IsIdling";
         private const string IsRunning = "IsRunning";
@@ -14,7 +14,10 @@ namespace CodeBase.Unit
         
         private Animator _animator;
 
-        public void Initialize() => _animator = GetComponent<Animator>();
+        public UnitView(Animator animator)
+        {
+            _animator = animator;
+        }
 
         public void StartIdling() => _animator.SetBool(Idling, true);
         public void StopIdling() => _animator.SetBool(Idling, false);

@@ -1,17 +1,29 @@
+using System;
+using CodeBase.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace CodeBase.Unit
 {
-    [RequireComponent(typeof(NavMeshAgent))]
-    public class UnitNavMesh : MonoBehaviour
+    public class UnitNavMesh : IUpdatable
     {
-        private NavMeshAgent _agent;
+        private readonly NavMeshAgent _agent;
         private Vector3 _destination;
 
-        public void Initialize()
+        public UnitNavMesh(NavMeshAgent agent)
         {
-            _agent = GetComponent<NavMeshAgent>();
+            _agent = agent;
+        }
+
+        public event Action DestinationReached;
+
+        public void Update(float deltaTime)
+        {
+            if (_agent.remainingDistance <= _agent.stoppingDistance && !_agent.pathPending)
+            {
+                DestinationReached?.Invoke();
+            }
         }
 
         public void SetDestination(Vector3 destination)

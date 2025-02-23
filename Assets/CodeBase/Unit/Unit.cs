@@ -1,33 +1,29 @@
 using CodeBase.Interfaces;
 using CodeBase.Unit.StateMachine;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace CodeBase.Unit
 {
-    [RequireComponent(typeof(UnitView))]
-    [RequireComponent(typeof(UnitNavMesh))]
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(NavMeshAgent))]
     public class Unit : MonoBehaviour, IRestartable
     {
         private UnitStateMachine _stateMachine;
-        private DistanceChecker _distanceChecker;
-        private bool _isBusy;
         private Resource.Resource _currentResource;
         
         private Vector3 _basePosition;
         private Quaternion _baseRotation;
+        private bool _isBusy;
 
         public void Initialize(Vector3 basePosition)
         {
-            View = GetComponent<UnitView>();
+            View = new UnitView(GetComponent<Animator>());
             
-            View.Initialize();
-            
-            NavMesh = GetComponent<UnitNavMesh>();
-            NavMesh.Initialize();
+            NavMesh = new UnitNavMesh(GetComponent<NavMeshAgent>());
+            NavMesh.DestinationReached += ChangeState;
             
             _stateMachine = new UnitStateMachine(this);
-
-            _distanceChecker = new DistanceChecker(this);
             
             _basePosition = basePosition;
             _baseRotation = transform.rotation;
@@ -41,7 +37,13 @@ namespace CodeBase.Unit
 
         private void Update()
         {
-            _distanceChecker.Update(Time.deltaTime);
+            if (_stateMachine.CurrentState is RunningState)
+                NavMesh.Update(Time.deltaTime);
+        }
+
+        private void OnDisable()
+        {
+            NavMesh.DestinationReached -= ChangeState;
         }
 
         public void Restart()
@@ -58,12 +60,16 @@ namespace CodeBase.Unit
         {
             _currentResource = resource;
 
-            NavMesh.SetDestination(resource.transform.position);
-            _distanceChecker.SetPoint(resource.transform.position);
+            NavMesh.SetDestination(_currentResource.transform.position);
             
             _stateMachine.Switch<RunningState>();
             
             _isBusy = true;
+        }
+
+        private void ChangeState()
+        {
+
         }
     }
 }

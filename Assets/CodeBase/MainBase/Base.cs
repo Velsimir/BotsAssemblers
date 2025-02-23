@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Interfaces;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace CodeBase.MainBase
 {
@@ -13,8 +15,6 @@ namespace CodeBase.MainBase
         
         private Unit.Unit _unit;
         private Scanner<Resource.Resource> _scanner;
-        private float _scanDelay;
-        private SphereCollider _searchSphere;
         private List<Resource.Resource> _resourcesToCollect;
         private Coroutine _restartCoroutine;
 
@@ -24,15 +24,16 @@ namespace CodeBase.MainBase
             
             _resourcesToCollect = new List<Resource.Resource>();
             
-            _searchSphere  = GetComponent<SphereCollider>();
-            _searchSphere.radius = data.RadiusToSearchResources;
-            
-            _scanner = new Scanner<Resource.Resource>(_searchSphere);
-            _scanDelay = data.ScanDelay;
-
-            EnableScanningCoroutine();
+            _scanner = new Scanner<Resource.Resource>(data.RadiusToSearchResources, data.ScanDelay, transform);
+            _scanner.StartScanning();
+            _scanner.ScanFinished += SearchResources;
 
             SpawnUnits();
+        }
+
+        private void OnDisable()
+        {
+            _scanner.ScanFinished -= SearchResources;
         }
 
         public void Restart()
@@ -41,7 +42,7 @@ namespace CodeBase.MainBase
 
             _unit.Restart();
             
-            EnableScanningCoroutine();
+            _scanner.StartScanning();
         }
 
         private void SpawnUnits()
@@ -58,35 +59,16 @@ namespace CodeBase.MainBase
             _unit = unit;
         }
 
-        private void EnableScanningCoroutine()
-        {
-            if (_restartCoroutine != null)
-            {
-                StopCoroutine(_restartCoroutine);
-                _restartCoroutine = null;
-            }
-
-            _restartCoroutine = StartCoroutine(StartScanning());
-        }
-
-        private IEnumerator StartScanning()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(_scanDelay);
-                SearchResources();
-            }
-        }
-
         private void SearchResources()
         {
-            _resourcesToCollect.AddRange(_scanner.GetObjects().
-                Where(newResource => _resourcesToCollect.Any(resourceInBase => resourceInBase == newResource) == false));
+            List<Resource.Resource> newResources = _scanner.Collectables
+                .Where(newResource => !_resourcesToCollect.Contains(newResource))
+                .ToList();
+
+            _resourcesToCollect.AddRange(newResources);
 
             if (_resourcesToCollect.Count > 0)
-            {
                 _unit.TakeResourceToMine(_resourcesToCollect[0]);
-            }
         }
     }
 }

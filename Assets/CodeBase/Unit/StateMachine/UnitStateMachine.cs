@@ -25,6 +25,8 @@ namespace CodeBase.Unit.StateMachine
             
             Debug.Log($"Entered {_currentState.GetType().Name}");
         }
+        
+        public IState CurrentState => _currentState;
 
         public void Switch<State>() where State : IState
         {
