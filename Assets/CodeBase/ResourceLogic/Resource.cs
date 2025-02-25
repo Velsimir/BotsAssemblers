@@ -45,6 +45,7 @@ namespace CodeBase.ResourceLogic
         {
             gameObject.SetActive(false);
             _isReserved = false;
+            transform.SetParent(null);
             Dissapear?.Invoke(this);
         }
     }
