@@ -11,14 +11,14 @@ namespace CodeBase.UnitLogic.StateMachine
         public override void Enter()
         {
             base.Enter();
-            Unit.View.StartMining();
+            Unit.Animator.StartMining();
             Unit.Miner.StartMining();
         }
 
         public override void Exit()
         {
             base.Exit();
-            Unit.View.StopMining();
+            Unit.Animator.StopMining();
         }
     }
 }

@@ -11,14 +11,14 @@ namespace CodeBase.UnitLogic.StateMachine
         public override void Enter()
         {
             base.Enter();
-            Unit.View.StartRunning();
+            Unit.Animator.StartRunning();
             Unit.NavMesh.Run();
         }
 
         public override void Exit()
         {
             base.Exit();
-            Unit.View.StopRunning();
+            Unit.Animator.StopRunning();
         }
     }
 }

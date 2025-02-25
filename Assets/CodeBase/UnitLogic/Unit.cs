@@ -21,7 +21,7 @@ namespace CodeBase.UnitLogic
 
         public void Initialize(Vector3 basePosition)
         {
-            View = new UnitView(GetComponent<Animator>());
+            Animator = new UnitAnimator(GetComponent<Animator>());
             
             NavMesh = new UnitNavMesh(GetComponent<NavMeshAgent>());
             NavMesh.DestinationReached += ChangeState;
@@ -39,7 +39,7 @@ namespace CodeBase.UnitLogic
 
         public event Action<Unit> ReturnedOnBase; 
 
-        public UnitView View { get; private set; }
+        public UnitAnimator Animator { get; private set; }
 
         public UnitNavMesh NavMesh { get; private set; }
 

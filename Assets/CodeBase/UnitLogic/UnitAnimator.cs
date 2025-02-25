@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CodeBase.UnitLogic
 {
-    public class UnitView
+    public class UnitAnimator
     {
         private const string IsIdling = "IsIdling";
         private const string IsRunning = "IsRunning";
@@ -14,7 +14,7 @@ namespace CodeBase.UnitLogic
         
         private Animator _animator;
 
-        public UnitView(Animator animator)
+        public UnitAnimator(Animator animator)
         {
             _animator = animator;
         }
