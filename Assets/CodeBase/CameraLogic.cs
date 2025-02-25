@@ -16,7 +16,6 @@ namespace CodeBase
             moveDirection = TakeDirectionByMouse(moveDirection);
 
             moveDirection.Normalize();
-
             
             Vector3 globalMoveDirection = transform.TransformDirection(moveDirection);
             globalMoveDirection.y = 0;
