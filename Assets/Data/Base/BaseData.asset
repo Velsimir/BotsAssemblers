@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BaseData
   m_EditorClassIdentifier: 
   _unitPrefab: {fileID: 1755877991484954097, guid: 49fbb60edc1949444b6f313e23b373e4, type: 3}
-  _countOfInitialUnits: 3
+  _countOfInitialUnits: 5
   _radiusToSearchResources: 100
-  _scanDelay: 5
+  _scanDelay: 3

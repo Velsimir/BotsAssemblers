@@ -1,21 +1,23 @@
+using System;
 using CodeBase.Interfaces;
-using CodeBase.Unit.StateMachine;
+using CodeBase.ResourceLogic;
+using CodeBase.UnitLogic.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace CodeBase.Unit
+namespace CodeBase.UnitLogic
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(NavMeshAgent))]
     public class Unit : MonoBehaviour, IRestartable
     {
         [SerializeField] private Transform _resourceHolder;
-        
+        [SerializeField] private Resource _currentResource;
         private UnitStateMachine _stateMachine;
         
         private Vector3 _basePosition;
         private Quaternion _baseRotation;
-        private bool _isBusy;
+        private bool _isBackPackFull;
 
         public void Initialize(Vector3 basePosition)
         {
@@ -30,18 +32,18 @@ namespace CodeBase.Unit
             _baseRotation = transform.rotation;
 
             Miner = new Miner(transform, 1f);
-            Miner.MiningDone += CollectResource;
+            Miner.MiningDone += InteractWithResource;
             
-            _isBusy = false;
+            _isBackPackFull = false;
         }
+
+        public event Action<Unit> ReturnedOnBase; 
 
         public UnitView View { get; private set; }
 
         public UnitNavMesh NavMesh { get; private set; }
 
         public Miner Miner { get; private set; }
-
-        public bool IsBusy => _isBusy;
 
         private void Update()
         {
@@ -56,7 +58,7 @@ namespace CodeBase.Unit
 
         public void Restart()
         {
-            _isBusy = false;
+            _isBackPackFull = false;
             
             _stateMachine.Switch<IdlingState>();
             
@@ -64,25 +66,36 @@ namespace CodeBase.Unit
             transform.rotation = _baseRotation;
         }
 
-        public void TakeResourceToMine(Resource.Resource resource)
+        public void TakeResourceToMine(Resource resource)
         {
+            _currentResource = resource;
             NavMesh.SetDestination(resource.transform.position);
             
             _stateMachine.Switch<RunningState>();
-            
-            _isBusy = true;
         }
 
         private void ChangeState()
         {
-            _stateMachine.Switch<MiningState>();
+            if (_isBackPackFull)
+            {
+                _stateMachine.Switch<IdlingState>();
+                _isBackPackFull = false;
+                ReturnedOnBase?.Invoke(this);
+            }
+            else
+            {
+                _stateMachine.Switch<MiningState>();
+            }
         }
 
-        private void CollectResource(IInteractable interactable)
+        private void InteractWithResource(IInteractable interactable)
         {
             interactable.Interact(_resourceHolder);
+            
             NavMesh.SetDestination(_basePosition);
             _stateMachine.Switch<RunningState>();
+            
+            _isBackPackFull = true;
         }
     }
 }

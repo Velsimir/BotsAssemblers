@@ -1,10 +1,9 @@
 using System;
 using CodeBase.Interfaces;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace CodeBase.Unit
+namespace CodeBase.UnitLogic
 {
     public class UnitNavMesh : IUpdatable
     {

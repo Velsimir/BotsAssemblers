@@ -1,11 +1,9 @@
-using UnityEngine;
 
 namespace CodeBase.Interfaces
 {
     public interface ICollectable
     {
-        bool IsCollected { get; }
-        
+        bool IsReserved { get; }
         void Collect();
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeBase.Unit
+namespace CodeBase.UnitLogic
 {
     public class UnitView
     {

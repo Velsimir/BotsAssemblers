@@ -4,7 +4,7 @@ using CodeBase.Interfaces;
 using CodeBase.Services;
 using UnityEngine;
 
-namespace CodeBase.Unit
+namespace CodeBase.UnitLogic
 {
     public class Miner
     {
@@ -50,7 +50,7 @@ namespace CodeBase.Unit
                 throw new AggregateException("Couldn't find resource");
             
             yield return new WaitForSeconds(3f);
-            Debug.Log("Mining done");
+
             MiningDone?.Invoke(_collectable);
         }
     }

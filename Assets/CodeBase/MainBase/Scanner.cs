@@ -7,9 +7,8 @@ using UnityEngine;
 
 namespace CodeBase.MainBase
 {
-    public class Scanner<TObjectToSearch> where TObjectToSearch : ICollectable
+    public class Scanner<TObjectToSearch> : IRestartable where TObjectToSearch : ICollectable, IInteractable
     {
-        private List<TObjectToSearch> _collectables;
         private readonly float _delay;
         private readonly float _radius;
         private readonly Transform _centerPoint;
@@ -20,13 +19,12 @@ namespace CodeBase.MainBase
             _radius = radius;
             _delay = delay;
             _centerPoint = centerPoint;
+            StartScanning();
         }
         
-        public event Action ScanFinished;
+        public event Action<List<TObjectToSearch>> ScanFinished;
         
-        public List<TObjectToSearch> Collectables => new List<TObjectToSearch>(_collectables);
-
-        public void StartScanning()
+        private void StartScanning()
         {
             if (_coroutineScanner != null)
             {
@@ -39,25 +37,36 @@ namespace CodeBase.MainBase
 
         private IEnumerator Scan()
         {
-            yield return new WaitForSeconds(_delay);
-            
-            FindObjects();
+            while (true)
+            {
+                yield return new WaitForSeconds(_delay);
+                
+                FindObjects();
+            }
         }
 
         private void FindObjects()
         {
-            _collectables = new List<TObjectToSearch>();
+            List<TObjectToSearch> collectables = new List<TObjectToSearch>();
             
             Collider[] colliders = Physics.OverlapSphere(_centerPoint.position, _radius);
 
             foreach (var collider in colliders)
             {
                 if (collider.gameObject.TryGetComponent(out TObjectToSearch collectableResource))
-                    if(collectableResource.IsCollected == false)
-                        _collectables.Add(collectableResource);
+                    if(collectableResource.IsReserved == false)
+                        collectables.Add(collectableResource);
             }
-            
-            ScanFinished?.Invoke();
+
+            if (collectables.Count > 0)
+            {
+                ScanFinished?.Invoke(collectables);
+            }
+        }
+
+        public void Restart()
+        {
+            StartScanning();
         }
     }
 }

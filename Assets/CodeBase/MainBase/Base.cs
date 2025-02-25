@@ -1,72 +1,84 @@
 using System.Collections.Generic;
-using System.Linq;
 using CodeBase.Interfaces;
+using CodeBase.ResourceLogic;
+using CodeBase.UnitLogic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace CodeBase.MainBase
 {
-    [RequireComponent(typeof(SphereCollider))]
     public class Base : MonoBehaviour, IRestartable
     {
-        [SerializeField] private BoxCollider _spawnArea;
+        [SerializeField] private BoxCollider _spawnUnitArea;
         
-        private Unit.Unit _unit;
-        private Scanner<Resource.Resource> _scanner;
-        private List<Resource.Resource> _resourcesToCollect;
+        private List<Unit> _units;
+        private Unit _unitPrefab;
         private Coroutine _restartCoroutine;
+        private Scanner<Resource> _scaner;
 
-        public void Initialize(BaseData data)
+        public void Initialize(Unit unitPrefab, int unitCount, Scanner<Resource> scaner)
         {
-            _unit = data.UnitPrefab;
+            _units = new List<Unit>();
             
-            _resourcesToCollect = new List<Resource.Resource>();
-            
-            _scanner = new Scanner<Resource.Resource>(data.RadiusToSearchResources, data.ScanDelay, transform);
-            _scanner.StartScanning();
-            _scanner.ScanFinished += SearchResources;
+            _unitPrefab = unitPrefab;
 
-            SpawnUnits();
+            for (int i = 0; i < unitCount; i++)
+            {
+                SpawnUnits();
+            }
+
+            _scaner = scaner;
+            _scaner.ScanFinished += SendUnitsToMine;
         }
 
         private void OnDisable()
         {
-            _scanner.ScanFinished -= SearchResources;
+            _scaner.ScanFinished -= SendUnitsToMine;
         }
 
         public void Restart()
         {
-            _resourcesToCollect.Clear();
+            foreach (Unit unit in _units)
+            {
+                unit.Restart();
+            }
+        }
 
-            _unit.Restart();
-            
-            _scanner.StartScanning();
+        private void SendUnitsToMine(List<Resource> collectables)
+        {
+            foreach (var resource in collectables)
+            {
+                if (_units.Count <= 0)
+                {
+                    break;
+                }
+                
+                Unit unit = _units[0];
+                unit.TakeResourceToMine(resource);
+                resource.Reserv();
+                _units.Remove(unit);
+                unit.ReturnedOnBase += AddFreeUnit;
+            }
+        }
+
+        private void AddFreeUnit(Unit unit)
+        {
+            _units.Add(unit);
+            unit.ReturnedOnBase -= AddFreeUnit;
         }
 
         private void SpawnUnits()
         {
-            float xPosition = Random.Range(_spawnArea.bounds.min.x, _spawnArea.bounds.max.x);
-            float zPosition = Random.Range(_spawnArea.bounds.min.z, _spawnArea.bounds.max.z);
+            float xPosition = Random.Range(_spawnUnitArea.bounds.min.x, _spawnUnitArea.bounds.max.x);
+            float zPosition = Random.Range(_spawnUnitArea.bounds.min.z, _spawnUnitArea.bounds.max.z);
             
-            Vector3 spawnPoint = new Vector3(xPosition, _spawnArea.bounds.min.y, zPosition);
+            Vector3 spawnPoint = new Vector3(xPosition, _spawnUnitArea.bounds.min.y, zPosition);
             
-            Unit.Unit unit = Instantiate(_unit, spawnPoint, Quaternion.identity);
+            Unit unit = Instantiate(_unitPrefab, spawnPoint, Quaternion.identity);
             
             unit.Initialize(spawnPoint);
             
-            _unit = unit;
-        }
-
-        private void SearchResources()
-        {
-            List<Resource.Resource> newResources = _scanner.Collectables
-                .Where(newResource => !_resourcesToCollect.Contains(newResource))
-                .ToList();
-
-            _resourcesToCollect.AddRange(newResources);
-
-            if (_resourcesToCollect.Count > 0)
-                _unit.TakeResourceToMine(_resourcesToCollect[0]);
+            _units.Add(unit);
         }
     }
 }

@@ -4,7 +4,7 @@ using CodeBase.Interfaces;
 using CodeBase.Services;
 using UnityEngine;
 
-namespace CodeBase.Resource
+namespace CodeBase.ResourceLogic
 {
     public class ResourceSpawner : IRestartable
     {

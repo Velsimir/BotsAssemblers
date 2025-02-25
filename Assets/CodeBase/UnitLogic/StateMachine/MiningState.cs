@@ -1,6 +1,6 @@
 using CodeBase.Interfaces;
 
-namespace CodeBase.Unit.StateMachine
+namespace CodeBase.UnitLogic.StateMachine
 {
     public class MiningState : MovementState
     {

@@ -3,7 +3,7 @@ using CodeBase.Interfaces;
 using CodeBase.Services;
 using UnityEngine;
 
-namespace CodeBase.Unit
+namespace CodeBase.UnitLogic
 {
     public class DistanceChecker : IUpdatable
     {

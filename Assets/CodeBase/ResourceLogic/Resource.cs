@@ -2,32 +2,37 @@ using System;
 using CodeBase.Interfaces;
 using UnityEngine;
 
-namespace CodeBase.Resource
+namespace CodeBase.ResourceLogic
 {
     public class Resource : MonoBehaviour, ICollectable, IInteractable, ISpawnable, IRestartable
     {
         [SerializeField] private string _name;
         
-        private bool _isCollected;
+        private bool _isReserved;
         private Collider _collider;
 
         public event Action<ISpawnable> Dissapear;
 
-        public bool IsCollected => _isCollected;
+        public bool IsReserved => _isReserved;
         public Collider Collider => _collider;
 
         private void Awake()
         {
-            _isCollected = false;
+            _isReserved = false;
             _collider = GetComponent<Collider>();
+        }
+
+        public void Reserv()
+        {
+            _isReserved = true;
         }
 
         public void Collect()
         {
-            Debug.Log($"{_name} Collected");
             gameObject.SetActive(false);
-            _isCollected = true;
+            transform.SetParent(null);
             Dissapear?.Invoke(this);
+            _isReserved = false;
         }
 
         public void Interact(Transform parent)
@@ -39,7 +44,7 @@ namespace CodeBase.Resource
         public void Restart()
         {
             gameObject.SetActive(false);
-            _isCollected = false;
+            _isReserved = false;
             Dissapear?.Invoke(this);
         }
     }

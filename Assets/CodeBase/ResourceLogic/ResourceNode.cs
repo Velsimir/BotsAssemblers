@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeBase.Resource
+namespace CodeBase.ResourceLogic
 {
     [RequireComponent(typeof(MeshCollider))]
     public class ResourceNode : MonoBehaviour

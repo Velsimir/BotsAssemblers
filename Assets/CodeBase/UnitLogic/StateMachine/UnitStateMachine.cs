@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Interfaces;
-using UnityEngine;
 
-namespace CodeBase.Unit.StateMachine
+namespace CodeBase.UnitLogic.StateMachine
 {
     public class UnitStateMachine : IStateSwitcher
     {
@@ -22,8 +21,6 @@ namespace CodeBase.Unit.StateMachine
             _currentState = _states[0];
             
             _currentState.Enter();
-            
-            Debug.Log($"Entered {_currentState.GetType().Name}");
         }
         
         public IState CurrentState => _currentState;
