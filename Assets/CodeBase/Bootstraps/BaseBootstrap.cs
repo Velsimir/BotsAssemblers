@@ -18,7 +18,7 @@ namespace CodeBase.Bootstraps
         private void Awake()
         {
             _scanner = new Scanner<Resource>(_data.RadiusToSearchResources, _data.ScanDelay, _base.transform);
-            _base.Initialize(_data.UnitPrefab, _data.CountOfInitialUnits, _scanner);
+            _base.Initialize(_data.UnitPrefab, new ResourceHandler(_scanner), _data.CountOfInitialUnits);
             _gameRestarter.GameRestarted += Restart;
             new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
         }

@@ -14,11 +14,12 @@ namespace CodeBase.MainBase
         private List<Unit> _units;
         private Unit _unitPrefab;
         private Coroutine _restartCoroutine;
-        private Scanner<Resource> _scaner;
+        private ResourceHandler _resourceHandler;
 
-        public void Initialize(Unit unitPrefab, int unitCount, Scanner<Resource> scaner)
+        public void Initialize(Unit unitPrefab, ResourceHandler resourceHandler, int unitCount)
         {
             _units = new List<Unit>();
+            _resourceHandler = resourceHandler;
             
             _unitPrefab = unitPrefab;
 
@@ -26,14 +27,14 @@ namespace CodeBase.MainBase
             {
                 SpawnUnits();
             }
-
-            _scaner = scaner;
-            _scaner.ScanFinished += SendUnitsToMine;
         }
 
-        private void OnDisable()
+        private void Update()
         {
-            _scaner.ScanFinished -= SendUnitsToMine;
+            if (_units.Count > 0 && _resourceHandler.TryGetResources(out Resource resource))
+            {
+                SendUnitToMine(resource);
+            }
         }
 
         public void Restart()
@@ -44,21 +45,13 @@ namespace CodeBase.MainBase
             }
         }
 
-        private void SendUnitsToMine(List<Resource> collectables)
+        private void SendUnitToMine(Resource resource)
         {
-            foreach (var resource in collectables)
-            {
-                if (_units.Count <= 0)
-                {
-                    break;
-                }
-                
-                Unit unit = _units[0];
-                unit.TakeResourceToMine(resource);
-                resource.Reserv();
-                _units.Remove(unit);
-                unit.ReturnedOnBase += AddFreeUnit;
-            }
+            Unit unit = _units[0];
+            unit.TakeResourceToMine(resource);
+            resource.Reserv();
+            _units.Remove(unit);
+            unit.ReturnedOnBase += AddFreeUnit;
         }
 
         private void AddFreeUnit(Unit unit)
