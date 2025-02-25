@@ -28,8 +28,7 @@ namespace CodeBase.Services
                 spawnableObjet = Object.Instantiate(_spawnablePrefab);
                 _pool.Track(spawnableObjet);
             }
-
-
+            
             spawnableObjet.gameObject.SetActive(true);
             
             return spawnableObjet;

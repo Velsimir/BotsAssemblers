@@ -57,9 +57,11 @@ namespace CodeBase.ResourceLogic
             for (int i = 0; i < Random.Range(_minResources, _maxResources); i++)
             {
                 Resource resource = _spawner.Spawn();
-                    
+
                 if (_allSpawnedResources.Contains(resource) == false)
+                {
                     _allSpawnedResources.Add(resource);
+                }
                     
                 _resourcePlacer.Put(resource);
             }
@@ -68,7 +70,9 @@ namespace CodeBase.ResourceLogic
         private void DeactivateAllResources()
         {
             foreach (var resource in _allSpawnedResources)
+            {
                 resource.Restart();
+            }
         }
     }
 }

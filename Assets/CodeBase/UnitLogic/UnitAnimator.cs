@@ -19,13 +19,19 @@ namespace CodeBase.UnitLogic
             _animator = animator;
         }
 
-        public void StartIdling() => _animator.SetBool(Idling, true);
-        public void StopIdling() => _animator.SetBool(Idling, false);
+        public void StartIdling() => 
+            _animator.SetBool(Idling, true);
+        public void StopIdling() => 
+            _animator.SetBool(Idling, false);
         
-        public void StartRunning() => _animator.SetBool(Running, true);
-        public void StopRunning() => _animator.SetBool(Running, false);
+        public void StartRunning() => 
+            _animator.SetBool(Running, true);
+        public void StopRunning() => 
+            _animator.SetBool(Running, false);
         
-        public void StartMining() => _animator.SetBool(Mining, true);
-        public void StopMining() => _animator.SetBool(Mining, false);
+        public void StartMining() => 
+            _animator.SetBool(Mining, true);
+        public void StopMining() => 
+            _animator.SetBool(Mining, false);
     }
 }

@@ -12,9 +12,8 @@ namespace CodeBase.UnitLogic
     public class Unit : MonoBehaviour, IRestartable
     {
         [SerializeField] private Transform _resourceHolder;
-        [SerializeField] private Resource _currentResource;
-        private UnitStateMachine _stateMachine;
         
+        private UnitStateMachine _stateMachine;
         private Vector3 _basePosition;
         private Quaternion _baseRotation;
         private bool _isBackPackFull;
@@ -48,7 +47,9 @@ namespace CodeBase.UnitLogic
         private void Update()
         {
             if (_stateMachine.CurrentState is RunningState)
+            {
                 NavMesh.Update(Time.deltaTime);
+            }
         }
 
         private void OnDisable()
@@ -60,7 +61,7 @@ namespace CodeBase.UnitLogic
         {
             _isBackPackFull = false;
             
-            _stateMachine.Switch<IdlingState>();
+            _stateMachine.Switch<IdleState>();
             
             transform.position = _basePosition;
             transform.rotation = _baseRotation;
@@ -68,7 +69,6 @@ namespace CodeBase.UnitLogic
 
         public void TakeResourceToMine(Resource resource)
         {
-            _currentResource = resource;
             NavMesh.SetDestination(resource.transform.position);
             
             _stateMachine.Switch<RunningState>();
@@ -78,13 +78,13 @@ namespace CodeBase.UnitLogic
         {
             if (_isBackPackFull)
             {
-                _stateMachine.Switch<IdlingState>();
+                _stateMachine.Switch<IdleState>();
                 _isBackPackFull = false;
                 ReturnedOnBase?.Invoke(this);
             }
             else
             {
-                _stateMachine.Switch<MiningState>();
+                _stateMachine.Switch<MineState>();
             }
         }
 

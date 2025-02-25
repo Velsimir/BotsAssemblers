@@ -30,7 +30,9 @@ namespace CodeBase.Services
         public static void StopRoutine(Coroutine routine)
         {
             if (routine != null)
+            {
                 Instance.StopCoroutine(routine);
+            }
         }
     }
 }

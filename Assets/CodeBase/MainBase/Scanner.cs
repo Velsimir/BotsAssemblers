@@ -54,8 +54,12 @@ namespace CodeBase.MainBase
             foreach (var collider in colliders)
             {
                 if (collider.gameObject.TryGetComponent(out TObjectToSearch collectableResource))
-                    if(collectableResource.IsReserved == false)
+                {
+                    if (collectableResource.IsReserved == false)
+                    {
                         collectables.Add(collectableResource);
+                    }
+                }
             }
 
             if (collectables.Count > 0)

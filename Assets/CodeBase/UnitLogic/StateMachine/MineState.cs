@@ -2,9 +2,9 @@ using CodeBase.Interfaces;
 
 namespace CodeBase.UnitLogic.StateMachine
 {
-    public class MiningState : MovementState
+    public class MineState : MovementState
     {
-        public MiningState(IStateSwitcher stateSwitcher, Unit unit) : base(stateSwitcher, unit)
+        public MineState(IStateSwitcher stateSwitcher, Unit unit) : base(stateSwitcher, unit)
         {
         }
 
@@ -12,7 +12,7 @@ namespace CodeBase.UnitLogic.StateMachine
         {
             base.Enter();
             Unit.Animator.StartMining();
-            Unit.Miner.StartMining();
+            Unit.Miner.StartMine();
         }
 
         public override void Exit()

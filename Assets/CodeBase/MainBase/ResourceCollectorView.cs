@@ -5,9 +5,9 @@ namespace CodeBase.MainBase
 {
     public class ResourceCollectorView : IDisposable
     {
-        TMP_Text _textCounterValue;
+        private readonly TMP_Text _textCounterValue;
         
-        private ResourceCollector _resourceCollector;
+        private readonly ResourceCollector _resourceCollector;
 
         public ResourceCollectorView(ResourceCollector resourceCollector, TMP_Text textCounterValue)
         {

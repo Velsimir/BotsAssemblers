@@ -2,9 +2,9 @@ using CodeBase.Interfaces;
 
 namespace CodeBase.UnitLogic.StateMachine
 {
-    public class IdlingState : MovementState
+    public class IdleState : MovementState
     {
-        public IdlingState(IStateSwitcher stateSwitcher, Unit unit) : base(stateSwitcher, unit)
+        public IdleState(IStateSwitcher stateSwitcher, Unit unit) : base(stateSwitcher, unit)
         {
         }
 

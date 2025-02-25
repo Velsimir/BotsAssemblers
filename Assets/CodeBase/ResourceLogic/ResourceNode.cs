@@ -7,6 +7,9 @@ namespace CodeBase.ResourceLogic
     {
         public MeshCollider MeshCollider { get; private set; }
 
-        public void Initialize() => MeshCollider = GetComponent<MeshCollider>();
+        public void Initialize()
+        {
+            MeshCollider = GetComponent<MeshCollider>();
+        }
     }
 }

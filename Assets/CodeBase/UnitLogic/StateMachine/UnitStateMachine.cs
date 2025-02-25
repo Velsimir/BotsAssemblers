@@ -13,9 +13,9 @@ namespace CodeBase.UnitLogic.StateMachine
         {
             _states = new List<IState>()
             {
-                new IdlingState(this, unit),
+                new IdleState(this, unit),
                 new RunningState(this, unit),
-                new MiningState(this, unit)
+                new MineState(this, unit)
             };
             
             _currentState = _states[0];
@@ -25,9 +25,9 @@ namespace CodeBase.UnitLogic.StateMachine
         
         public IState CurrentState => _currentState;
 
-        public void Switch<State>() where State : IState
+        public void Switch<TState>() where TState : IState
         {
-            IState state = _states.FirstOrDefault(state => state is State);
+            IState state = _states.FirstOrDefault(state => state is TState);
             
             _currentState.Exit();
             _currentState = state;

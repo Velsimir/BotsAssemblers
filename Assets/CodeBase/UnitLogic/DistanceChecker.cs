@@ -25,7 +25,9 @@ namespace CodeBase.UnitLogic
         public void Update(float deltaTime)
         {
             if (_isTargetReached)
+            {
                 return;
+            }
             
             Check();
         }

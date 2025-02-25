@@ -22,7 +22,7 @@ namespace CodeBase.UnitLogic
             _radius = radius;
         }
 
-        public void StartMining()
+        public void StartMine()
         {
             if (_coroutineMine != null)
             {
@@ -47,7 +47,9 @@ namespace CodeBase.UnitLogic
             }
 
             if (_collectable == null)
+            {
                 throw new AggregateException("Couldn't find resource");
+            }
             
             yield return new WaitForSeconds(3f);
 

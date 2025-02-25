@@ -23,10 +23,25 @@ namespace CodeBase
 
         private Vector3 TakeDirectionByMouse(Vector3 moveDirection)
         {
-            if (Input.mousePosition.x <= _edgeScrollSize) moveDirection.x -= 1;
-            if (Input.mousePosition.x >= Screen.width - _edgeScrollSize) moveDirection.x += 1;
-            if (Input.mousePosition.y <= _edgeScrollSize) moveDirection.z -= 1;
-            if (Input.mousePosition.y >= Screen.height - _edgeScrollSize) moveDirection.z += 1;
+            if (Input.mousePosition.x <= _edgeScrollSize)
+            {
+                moveDirection.x -= 1;
+            }
+
+            if (Input.mousePosition.x >= Screen.width - _edgeScrollSize)
+            {
+                moveDirection.x += 1;
+            }
+
+            if (Input.mousePosition.y <= _edgeScrollSize)
+            {
+                moveDirection.z -= 1;
+            }
+
+            if (Input.mousePosition.y >= Screen.height - _edgeScrollSize)
+            {
+                moveDirection.z += 1;
+            }
             
             return moveDirection;
         }
