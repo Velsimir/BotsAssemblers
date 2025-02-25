@@ -8,23 +8,15 @@ namespace CodeBase.ResourceLogic
     {
         [SerializeField] private string _name;
         
-        private bool _isReserved;
         private Collider _collider;
 
         public event Action<ISpawnable> Dissapear;
 
-        public bool IsReserved => _isReserved;
         public Collider Collider => _collider;
 
         private void Awake()
         {
-            _isReserved = false;
             _collider = GetComponent<Collider>();
-        }
-
-        public void Reserv()
-        {
-            _isReserved = true;
         }
 
         public void Collect()
@@ -32,7 +24,6 @@ namespace CodeBase.ResourceLogic
             gameObject.SetActive(false);
             transform.SetParent(null);
             Dissapear?.Invoke(this);
-            _isReserved = false;
         }
 
         public void Interact(Transform parent)
@@ -44,7 +35,6 @@ namespace CodeBase.ResourceLogic
         public void Restart()
         {
             gameObject.SetActive(false);
-            _isReserved = false;
             transform.SetParent(null);
             Dissapear?.Invoke(this);
         }

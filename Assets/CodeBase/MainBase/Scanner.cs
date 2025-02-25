@@ -55,10 +55,7 @@ namespace CodeBase.MainBase
             {
                 if (collider.gameObject.TryGetComponent(out TObjectToSearch collectableResource))
                 {
-                    if (collectableResource.IsReserved == false)
-                    {
-                        collectables.Add(collectableResource);
-                    }
+                    collectables.Add(collectableResource);
                 }
             }
 
