@@ -49,7 +49,6 @@ namespace CodeBase.MainBase
         {
             Unit unit = _units[0];
             unit.TakeResourceToMine(resource);
-            resource.Reserv();
             _units.Remove(unit);
             unit.ReturnedOnBase += AddFreeUnit;
         }
