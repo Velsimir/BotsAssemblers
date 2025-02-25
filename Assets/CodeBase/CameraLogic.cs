@@ -17,6 +17,7 @@ namespace CodeBase
 
             moveDirection.Normalize();
 
+            
             Vector3 globalMoveDirection = transform.TransformDirection(moveDirection);
             globalMoveDirection.y = 0;
 
