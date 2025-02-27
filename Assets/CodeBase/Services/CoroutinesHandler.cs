@@ -5,34 +5,15 @@ namespace CodeBase.Services
 {
     public sealed class CoroutinesHandler : MonoBehaviour
     {
-        private static CoroutinesHandler Instance
+        public Coroutine StartRoutine(IEnumerator routine)
         {
-            get
-            {
-                if (SubInstance == null)
-                {
-                    GameObject gameObject = new GameObject("CoroutinesHandler");
-                    SubInstance = gameObject.AddComponent<CoroutinesHandler>();
-                    DontDestroyOnLoad(gameObject);
-                }
-
-                return SubInstance;
-            }
-        }
-        
-        private static CoroutinesHandler SubInstance;
-
-        public static Coroutine StartRoutine(IEnumerator routine)
-        {
-            return Instance.StartCoroutine(routine);
+            return StartCoroutine(routine);
         }
 
-        public static void StopRoutine(Coroutine routine)
+        public void StopRoutine(Coroutine routine)
         {
             if (routine != null)
-            {
-                Instance.StopCoroutine(routine);
-            }
+                StopCoroutine(routine);
         }
     }
 }

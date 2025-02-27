@@ -13,12 +13,15 @@ namespace CodeBase.MainBase
         private readonly float _radius;
         private readonly Transform _centerPoint;
         private Coroutine _coroutineScanner;
+        private CoroutinesHandler _coroutinesHandler;
         
-        public Scanner(float radius, float delay, Transform centerPoint)
+        public Scanner(float radius, float delay, Transform centerPoint, CoroutinesHandler coroutinesHandler)
         {
             _radius = radius;
             _delay = delay;
             _centerPoint = centerPoint;
+            _coroutinesHandler = coroutinesHandler;
+            
             StartScanning();
         }
         
@@ -28,11 +31,11 @@ namespace CodeBase.MainBase
         {
             if (_coroutineScanner != null)
             {
-                CoroutinesHandler.StopRoutine(_coroutineScanner);
+                _coroutinesHandler.StopRoutine(_coroutineScanner);
                 _coroutineScanner = null;
             }
             
-            _coroutineScanner = CoroutinesHandler.StartRoutine(Scan());
+            _coroutineScanner = _coroutinesHandler.StartRoutine(Scan());
         }
 
         private IEnumerator Scan()

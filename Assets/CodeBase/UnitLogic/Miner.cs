@@ -13,24 +13,26 @@ namespace CodeBase.UnitLogic
         private readonly float _radius;
         
         private Coroutine _coroutineMine;
+        private CoroutinesHandler _coroutinesHandler;
         
         public event Action<IInteractable> MiningDone;
 
-        public Miner(Transform minePoint, float radius)
+        public Miner(Transform minePoint, float radius, CoroutinesHandler coroutineHandler)
         {
             _minePoint = minePoint;
             _radius = radius;
+            _coroutinesHandler = coroutineHandler;
         }
 
         public void StartMine()
         {
             if (_coroutineMine != null)
             {
-                CoroutinesHandler.StopRoutine(_coroutineMine);
+                _coroutinesHandler.StopRoutine(_coroutineMine);
                 _coroutineMine = null;
             }
 
-            CoroutinesHandler.StartRoutine(Mine());
+            _coroutinesHandler.StartRoutine(Mine());
         }
 
         private IEnumerator Mine()

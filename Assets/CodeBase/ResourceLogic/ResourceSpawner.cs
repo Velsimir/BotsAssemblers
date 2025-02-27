@@ -16,24 +16,26 @@ namespace CodeBase.ResourceLogic
         private readonly List<Resource> _allSpawnedResources;
         
         private Coroutine _spawnCoroutine;
+        private readonly CoroutinesHandler _coroutineHandler;
 
-        public ResourceSpawner(Spawner<Resource> spawner, ResourcePlacer resourcePlacer, float spawnInterval)
+        public ResourceSpawner(Spawner<Resource> spawner, ResourcePlacer resourcePlacer, float spawnInterval, CoroutinesHandler coroutineHandler)
         {
             _spawner = spawner;
             _resourcePlacer = resourcePlacer;
             _spawnInterval = spawnInterval;
             _allSpawnedResources = new List<Resource>();
+            _coroutineHandler = coroutineHandler;
         }
 
         public void StartSpawn()
         {
             if (_spawnCoroutine != null)
             {
-                CoroutinesHandler.StopRoutine(_spawnCoroutine);
+                _coroutineHandler.StopRoutine(_spawnCoroutine);
                 _spawnCoroutine = null;
             }
 
-            _spawnCoroutine = CoroutinesHandler.StartRoutine(Spawn());
+            _spawnCoroutine = _coroutineHandler.StartRoutine(Spawn());
         }
 
         public void Restart()

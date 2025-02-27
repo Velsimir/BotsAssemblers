@@ -1,5 +1,6 @@
 using CodeBase.MainBase;
 using CodeBase.ResourceLogic;
+using CodeBase.Services;
 using TMPro;
 using UnityEngine;
 
@@ -10,16 +11,17 @@ namespace CodeBase.Bootstraps
         [SerializeField] private Base _base;
         [SerializeField] private ResourceCollector _resourceCollector;
         [SerializeField] private BaseData _data;
-        [SerializeField] private GameRestarter _gameRestarter;
         [SerializeField] private TMP_Text _textResourceCollectorValue;
         
+        private GameBootstrap _gameBootstrap;
         private Scanner<Resource> _scanner;
 
-        private void Awake()
+        public void Initialize(CoroutinesHandler coroutinesHandler, GameBootstrap gameBootstrap)
         {
-            _scanner = new Scanner<Resource>(_data.RadiusToSearchResources, _data.ScanDelay, _base.transform);
-            _base.Initialize(_data.UnitPrefab, new ResourceHandler(_scanner), _data.CountOfInitialUnits);
-            _gameRestarter.GameRestarted += Restart;
+            _scanner = new Scanner<Resource>(_data.RadiusToSearchResources, _data.ScanDelay, _base.transform, coroutinesHandler);
+            _base.Initialize(_data.UnitPrefab, new ResourceHandler(_scanner), _data.CountOfInitialUnits, coroutinesHandler);
+            _gameBootstrap = gameBootstrap;
+            _gameBootstrap.GameRestarted += Restart;
             new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
         }
 

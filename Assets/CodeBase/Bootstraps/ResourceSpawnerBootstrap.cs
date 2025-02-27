@@ -10,21 +10,23 @@ namespace CodeBase.Bootstraps
         [SerializeField] private Resource _resourcePrefab;
         [SerializeField] private float _radiusToSpawn;
         [SerializeField] private float _spawnInterval;
-        [SerializeField] private GameRestarter _gameRestarter;
         
+        private GameBootstrap _gameBootstrap;
         private Spawner<Resource> _spawner;
         private ResourcePlacer _resourcePlacer;
         private ResourceSpawner _resourceSpawner;
 
-        private void Awake()
+        public void Initialize(CoroutinesHandler coroutinesHandler, GameBootstrap gameBootstrap)
         {
             _spawner = new Spawner<Resource>(_resourcePrefab);
             _resourcePlacer = new ResourcePlacer(GetAllCollidersToSpawn());
-            _resourceSpawner = new ResourceSpawner(_spawner, _resourcePlacer, _spawnInterval);
-
+            _resourceSpawner = new ResourceSpawner(_spawner, _resourcePlacer, _spawnInterval, coroutinesHandler);
+            
             _resourceSpawner.StartSpawn();
             
-            _gameRestarter.GameRestarted += Restart;
+            _gameBootstrap = gameBootstrap;
+            
+            _gameBootstrap.GameRestarted += Restart;
         }
 
         private List<ResourceNode> GetAllCollidersToSpawn()

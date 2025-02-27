@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CodeBase.Interfaces;
 using CodeBase.ResourceLogic;
+using CodeBase.Services;
 using CodeBase.UnitLogic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -13,14 +14,16 @@ namespace CodeBase.MainBase
         
         private List<Unit> _units;
         private Unit _unitPrefab;
-        private Coroutine _restartCoroutine;
+        private CoroutinesHandler _coroutineHandler;
         private ResourceHandler _resourceHandler;
 
-        public void Initialize(Unit unitPrefab, ResourceHandler resourceHandler, int unitCount)
+        public void Initialize(Unit unitPrefab, ResourceHandler resourceHandler, int unitCount, CoroutinesHandler coroutineHandler)
         {
             _units = new List<Unit>();
             _resourceHandler = resourceHandler;
             _resourceHandler.NewResourcesAdded += TrySendUnitsToMine;
+            
+            _coroutineHandler = coroutineHandler;
             
             _unitPrefab = unitPrefab;
 
@@ -76,7 +79,7 @@ namespace CodeBase.MainBase
             
             Unit unit = Instantiate(_unitPrefab, spawnPoint, Quaternion.identity);
             
-            unit.Initialize(spawnPoint);
+            unit.Initialize(spawnPoint, _coroutineHandler);
             
             _units.Add(unit);
         }

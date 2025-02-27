@@ -1,6 +1,7 @@
 using System;
 using CodeBase.Interfaces;
 using CodeBase.ResourceLogic;
+using CodeBase.Services;
 using CodeBase.UnitLogic.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,6 +18,7 @@ namespace CodeBase.UnitLogic
         private Vector3 _basePosition;
         private Quaternion _baseRotation;
         private bool _isBackPackFull;
+        private float _radiusMine = 1f;
 
         public event Action<Unit> ReturnedOnBase; 
 
@@ -24,7 +26,7 @@ namespace CodeBase.UnitLogic
         public UnitNavMesh NavMesh { get; private set; }
         public Miner Miner { get; private set; }
 
-        public void Initialize(Vector3 basePosition)
+        public void Initialize(Vector3 basePosition, CoroutinesHandler coroutinesHandler)
         {
             Animator = new UnitAnimator(GetComponent<Animator>());
             
@@ -36,7 +38,7 @@ namespace CodeBase.UnitLogic
             _basePosition = basePosition;
             _baseRotation = transform.rotation;
 
-            Miner = new Miner(transform, 1f);
+            Miner = new Miner(transform, _radiusMine, coroutinesHandler);
             Miner.MiningDone += InteractWithResource;
             
             _isBackPackFull = false;
