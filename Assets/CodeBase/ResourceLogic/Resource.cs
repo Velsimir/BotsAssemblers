@@ -8,15 +8,13 @@ namespace CodeBase.ResourceLogic
     {
         [SerializeField] private string _name;
         
-        private Collider _collider;
-
         public event Action<ISpawnable> Dissapear;
 
-        public Collider Collider => _collider;
+        public Collider Collider { get; private set; }
 
         private void Awake()
         {
-            _collider = GetComponent<Collider>();
+            Collider = GetComponent<Collider>();
         }
 
         public void Collect()

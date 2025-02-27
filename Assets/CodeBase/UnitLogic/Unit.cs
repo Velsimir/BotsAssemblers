@@ -18,6 +18,12 @@ namespace CodeBase.UnitLogic
         private Quaternion _baseRotation;
         private bool _isBackPackFull;
 
+        public event Action<Unit> ReturnedOnBase; 
+
+        public UnitAnimator Animator { get; private set; }
+        public UnitNavMesh NavMesh { get; private set; }
+        public Miner Miner { get; private set; }
+
         public void Initialize(Vector3 basePosition)
         {
             Animator = new UnitAnimator(GetComponent<Animator>());
@@ -35,14 +41,6 @@ namespace CodeBase.UnitLogic
             
             _isBackPackFull = false;
         }
-
-        public event Action<Unit> ReturnedOnBase; 
-
-        public UnitAnimator Animator { get; private set; }
-
-        public UnitNavMesh NavMesh { get; private set; }
-
-        public Miner Miner { get; private set; }
 
         private void Update()
         {
