@@ -20,6 +20,7 @@ namespace CodeBase.MainBase
         {
             _units = new List<Unit>();
             _resourceHandler = resourceHandler;
+            _resourceHandler.NewResourcesAdded += TrySendUnitsToMine;
             
             _unitPrefab = unitPrefab;
 
@@ -29,12 +30,9 @@ namespace CodeBase.MainBase
             }
         }
 
-        private void Update()
+        private void OnDisable()
         {
-            if (_units.Count > 0 && _resourceHandler.TryGetResources(out Resource resource))
-            {
-                SendUnitToMine(resource);
-            }
+            _resourceHandler.NewResourcesAdded -= TrySendUnitsToMine;
         }
 
         public void Restart()
@@ -42,6 +40,14 @@ namespace CodeBase.MainBase
             foreach (Unit unit in _units)
             {
                 unit.Restart();
+            }
+        }
+
+        private void TrySendUnitsToMine()
+        {
+            if (_units.Count > 0 && _resourceHandler.TryGetResource(out Resource resource))
+            {
+                SendUnitToMine(resource);
             }
         }
 
@@ -57,6 +63,8 @@ namespace CodeBase.MainBase
         {
             _units.Add(unit);
             unit.ReturnedOnBase -= AddFreeUnit;
+            
+            TrySendUnitsToMine();
         }
 
         private void SpawnUnits()

@@ -20,16 +20,18 @@ namespace CodeBase.MainBase
             _scanner = scanner;
             _scanner.ScanFinished += AddNewResources;
         }
+        
+        public event Action NewResourcesAdded; 
 
-        public bool TryGetResources(out Resource resource)
+        public bool TryGetResource(out Resource resource)
         {
             if (_foundedNewResources.Count > 0)
             {
                 resource = _foundedNewResources[0];
-                
+                    
                 _reservedResources.Add(resource);
                 _foundedNewResources.Remove(resource);
-                
+                    
                 resource.Dissapear += RemoveFromReserved;
                 
                 return true;
@@ -52,6 +54,8 @@ namespace CodeBase.MainBase
             List<Resource> newResources = foundedResources.Except(_reservedResources).Except(_foundedNewResources).ToList();
             
             _foundedNewResources.AddRange(newResources);
+            
+            NewResourcesAdded?.Invoke();
         }
 
         public void Dispose()
