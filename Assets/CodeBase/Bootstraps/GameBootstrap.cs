@@ -1,4 +1,3 @@
-using System;
 using CodeBase.Services;
 using UnityEngine;
 
@@ -13,8 +12,6 @@ namespace CodeBase.Bootstraps
         private ResourceSpawnerBootstrap _resourceSpawnerBootstrap;
         private CoroutinesHandler _coroutinesHandler;
         
-        public event Action GameRestarted;
-
         private void Awake()
         {
             _coroutinesHandler = GetComponent<CoroutinesHandler>();
@@ -25,9 +22,5 @@ namespace CodeBase.Bootstraps
             _resourceSpawnerBootstrap = GetComponent<ResourceSpawnerBootstrap>();
             _resourceSpawnerBootstrap.Initialize(_coroutinesHandler, this);
         }
-
-        [ContextMenu("Restart Game")]
-        private void Restart() => 
-            GameRestarted?.Invoke();
     }
 }

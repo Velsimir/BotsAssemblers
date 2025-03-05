@@ -31,8 +31,6 @@ namespace CodeBase.MainBase
             
             Vector3 spawnPoint = new Vector3(xPosition, spawnArea.bounds.min.y, zPosition);
             
-            Debug.Log(spawnPoint);
-            
             return spawnPoint;
         }
     }

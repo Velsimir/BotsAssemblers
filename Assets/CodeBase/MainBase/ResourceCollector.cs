@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeBase.MainBase
 {
-    public class ResourceCollector : MonoBehaviour, IRestartable
+    public class ResourceCollector : MonoBehaviour
     {
         private int _collectedResources;
 
@@ -20,10 +20,12 @@ namespace CodeBase.MainBase
             }
         }
 
-        public void Restart()
+        private void Spend(int amount)
         {
-            _collectedResources = 0;
-            ValueChanged?.Invoke(_collectedResources);
+            if (_collectedResources >= amount )
+            {
+                _collectedResources -= amount;
+            }
         }
     }
 }

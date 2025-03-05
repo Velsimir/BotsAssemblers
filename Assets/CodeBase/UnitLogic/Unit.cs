@@ -10,7 +10,7 @@ namespace CodeBase.UnitLogic
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(NavMeshAgent))]
-    public class Unit : MonoBehaviour, IRestartable, ISpawnable
+    public class Unit : MonoBehaviour, ISpawnable
     {
         [SerializeField] private Transform _resourceHolder;
         
@@ -57,16 +57,6 @@ namespace CodeBase.UnitLogic
         {
             NavMesh.DestinationReached -= ChangeState;
             Dissapear?.Invoke(this);
-        }
-
-        public void Restart()
-        {
-            _isBackPackFull = false;
-            
-            _stateMachine.Switch<IdleState>();
-            
-            transform.position = _basePosition;
-            transform.rotation = _baseRotation;
         }
 
         public void TakeResourceToMine(Resource resource)

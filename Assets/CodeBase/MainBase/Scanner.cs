@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CodeBase.MainBase
 {
-    public class Scanner<TObjectToSearch> : IRestartable where TObjectToSearch : ICollectable, IInteractable
+    public class Scanner<TObjectToSearch> where TObjectToSearch : ICollectable, IInteractable
     {
         private readonly float _delay;
         private readonly float _radius;
@@ -66,11 +66,6 @@ namespace CodeBase.MainBase
             {
                 ScanFinished?.Invoke(collectables);
             }
-        }
-
-        public void Restart()
-        {
-            StartScanning();
         }
     }
 }

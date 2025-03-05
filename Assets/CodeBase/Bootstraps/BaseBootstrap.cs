@@ -10,7 +10,7 @@ namespace CodeBase.Bootstraps
     {
         [SerializeField] private Base _base;
         [SerializeField] private ResourceCollector _resourceCollector;
-        [SerializeField] private BaseData _data;
+        [SerializeField] private BaseData _baseData;
         [SerializeField] private TMP_Text _textResourceCollectorValue;
         
         private GameBootstrap _gameBootstrap;
@@ -18,20 +18,12 @@ namespace CodeBase.Bootstraps
 
         public void Initialize(CoroutinesHandler coroutinesHandler, GameBootstrap gameBootstrap)
         {
-            _scanner = new Scanner<Resource>(_data.RadiusToSearchResources, _data.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(new ResourceHandler(_scanner), new UnitSpawner(_data.UnitPrefab, coroutinesHandler));
+            _scanner = new Scanner<Resource>(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
+            _base.Initialize(new ResourceHandler(_scanner), new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _baseData.ResourcesToSpawnNewUnit);
             
             _gameBootstrap = gameBootstrap;
-            _gameBootstrap.GameRestarted += Restart;
             
             new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
-        }
-
-        private void Restart()
-        {
-            _base.Restart();
-            _scanner.Restart();
-            _resourceCollector.Restart();
         }
     }
 }

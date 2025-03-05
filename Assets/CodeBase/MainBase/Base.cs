@@ -1,64 +1,57 @@
-using System.Collections.Generic;
-using CodeBase.Interfaces;
 using CodeBase.ResourceLogic;
-using CodeBase.Services;
 using CodeBase.UnitLogic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace CodeBase.MainBase
 {
-    public class Base : MonoBehaviour, IRestartable
+    public class Base : MonoBehaviour
     {
         [SerializeField] private BoxCollider _spawnUnitArea;
+        [SerializeField] private ResourceCollector _resourceCollector;
         
-        private List<Unit> _units;
         private ResourceHandler _resourceHandler;
+        private UnitSpawner _spawner;
+        private UnitsHandler _unitsHandler;
+        private int _resourcesToSpawnNewUnit;
 
-        public void Initialize(ResourceHandler resourceHandler, UnitSpawner spawner)
+        public void Initialize(ResourceHandler resourceHandler, UnitSpawner spawner, int resourcesToSpawnNewUnit)
         {
-            _units = new List<Unit>();
+            _spawner = spawner;
             _resourceHandler = resourceHandler;
-            _resourceHandler.NewResourcesAdded += TrySendUnitsToMine;
+            _resourceHandler.NewResourcesAdded += SendTaskToMine;
+            _unitsHandler = new UnitsHandler();
 
-            _units.Add(spawner.GetUnit(_spawnUnitArea));
+            _resourcesToSpawnNewUnit = resourcesToSpawnNewUnit;
+            
+            SpawnUnit();
         }
 
         private void OnDisable()
         {
-            _resourceHandler.NewResourcesAdded -= TrySendUnitsToMine;
+            _resourceHandler.NewResourcesAdded -= SendTaskToMine;
         }
 
-        public void Restart()
+        private async void SendTaskToMine()
         {
-            foreach (Unit unit in _units)
+            while (_resourceHandler.TryGetResource(out Resource resource))
             {
-                unit.Restart();
+                await _unitsHandler.SendUnitToMineAsync(resource);
             }
         }
 
-        private void TrySendUnitsToMine()
+        private void TrySpawnNewUnit()
         {
-            if (_units.Count > 0 && _resourceHandler.TryGetResource(out Resource resource))
+            //if (_resourceHandler)
             {
-                SendUnitToMine(resource);
+                
             }
         }
 
-        private void SendUnitToMine(Resource resource)
+        private void SpawnUnit()
         {
-            Unit unit = _units[0];
-            unit.TakeResourceToMine(resource);
-            _units.Remove(unit);
-            unit.ReturnedOnBase += AddFreeUnit;
-        }
-
-        private void AddFreeUnit(Unit unit)
-        {
-            _units.Add(unit);
-            unit.ReturnedOnBase -= AddFreeUnit;
+            Unit unit = _spawner.GetUnit(_spawnUnitArea);
             
-            TrySendUnitsToMine();
+            _unitsHandler.AddNewUnit(unit);
         }
     }
 }

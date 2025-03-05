@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeBase.ResourceLogic
 {
-    public class Resource : MonoBehaviour, ICollectable, IInteractable, ISpawnable, IRestartable
+    public class Resource : MonoBehaviour, ICollectable, IInteractable, ISpawnable
     {
         [SerializeField] private string _name;
         
@@ -28,13 +28,6 @@ namespace CodeBase.ResourceLogic
         {
             transform.SetParent(parent);
             transform.position = parent.position;
-        }
-
-        public void Restart()
-        {
-            gameObject.SetActive(false);
-            transform.SetParent(null);
-            Dissapear?.Invoke(this);
         }
     }
 }

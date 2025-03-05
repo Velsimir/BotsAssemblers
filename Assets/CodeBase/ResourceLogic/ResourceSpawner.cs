@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using CodeBase.Interfaces;
 using CodeBase.Services;
 using UnityEngine;
 
 namespace CodeBase.ResourceLogic
 {
-    public class ResourceSpawner : IRestartable
+    public class ResourceSpawner
     {
         private readonly Spawner<Resource> _spawner;
         private readonly ResourcePlacer _resourcePlacer;
@@ -38,12 +37,6 @@ namespace CodeBase.ResourceLogic
             _spawnCoroutine = _coroutineHandler.StartRoutine(Spawn());
         }
 
-        public void Restart()
-        {
-            DeactivateAllResources();
-            StartSpawn();
-        }
-
         private IEnumerator Spawn()
         {
             while (true)
@@ -66,14 +59,6 @@ namespace CodeBase.ResourceLogic
                 }
                     
                 _resourcePlacer.Put(resource);
-            }
-        }
-
-        private void DeactivateAllResources()
-        {
-            foreach (var resource in _allSpawnedResources)
-            {
-                resource.Restart();
             }
         }
     }

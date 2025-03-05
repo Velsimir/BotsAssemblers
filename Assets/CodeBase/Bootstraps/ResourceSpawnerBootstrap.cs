@@ -25,8 +25,6 @@ namespace CodeBase.Bootstraps
             _resourceSpawner.StartSpawn();
             
             _gameBootstrap = gameBootstrap;
-            
-            _gameBootstrap.GameRestarted += Restart;
         }
 
         private List<ResourceNode> GetAllCollidersToSpawn()
@@ -43,11 +41,6 @@ namespace CodeBase.Bootstraps
             }
             
             return colliders;
-        }
-
-        private void Restart()
-        {
-            _resourceSpawner.Restart();
         }
     }
 }
