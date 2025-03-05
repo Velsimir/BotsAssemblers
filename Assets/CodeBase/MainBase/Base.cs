@@ -13,24 +13,17 @@ namespace CodeBase.MainBase
         [SerializeField] private BoxCollider _spawnUnitArea;
         
         private List<Unit> _units;
-        private Unit _unitPrefab;
-        private CoroutinesHandler _coroutineHandler;
         private ResourceHandler _resourceHandler;
+        private ResourceCollector _resourceCollector;
 
-        public void Initialize(Unit unitPrefab, ResourceHandler resourceHandler, int unitCount, CoroutinesHandler coroutineHandler)
+        public void Initialize(ResourceHandler resourceHandler, ResourceCollector resourceCollector, UnitSpawner spawner)
         {
             _units = new List<Unit>();
             _resourceHandler = resourceHandler;
             _resourceHandler.NewResourcesAdded += TrySendUnitsToMine;
-            
-            _coroutineHandler = coroutineHandler;
-            
-            _unitPrefab = unitPrefab;
+            _resourceCollector = resourceCollector;
 
-            for (int i = 0; i < unitCount; i++)
-            {
-                SpawnUnits();
-            }
+            _units.Add(spawner.GetUnit(_spawnUnitArea));
         }
 
         private void OnDisable()
@@ -68,20 +61,6 @@ namespace CodeBase.MainBase
             unit.ReturnedOnBase -= AddFreeUnit;
             
             TrySendUnitsToMine();
-        }
-
-        private void SpawnUnits()
-        {
-            float xPosition = Random.Range(_spawnUnitArea.bounds.min.x, _spawnUnitArea.bounds.max.x);
-            float zPosition = Random.Range(_spawnUnitArea.bounds.min.z, _spawnUnitArea.bounds.max.z);
-            
-            Vector3 spawnPoint = new Vector3(xPosition, _spawnUnitArea.bounds.min.y, zPosition);
-            
-            Unit unit = Instantiate(_unitPrefab, spawnPoint, Quaternion.identity);
-            
-            unit.Initialize(spawnPoint, _coroutineHandler);
-            
-            _units.Add(unit);
         }
     }
 }

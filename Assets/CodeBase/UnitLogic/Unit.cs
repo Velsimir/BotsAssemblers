@@ -10,7 +10,7 @@ namespace CodeBase.UnitLogic
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(NavMeshAgent))]
-    public class Unit : MonoBehaviour, IRestartable
+    public class Unit : MonoBehaviour, IRestartable, ISpawnable
     {
         [SerializeField] private Transform _resourceHolder;
         
@@ -20,7 +20,8 @@ namespace CodeBase.UnitLogic
         private bool _isBackPackFull;
         private float _radiusMine = 1f;
 
-        public event Action<Unit> ReturnedOnBase; 
+        public event Action<Unit> ReturnedOnBase;
+        public event Action<ISpawnable> Dissapear;
 
         public UnitAnimator Animator { get; private set; }
         public UnitNavMesh NavMesh { get; private set; }
@@ -42,6 +43,8 @@ namespace CodeBase.UnitLogic
             Miner.MiningDone += InteractWithResource;
             
             _isBackPackFull = false;
+            
+            transform.position = _basePosition;
         }
 
         private void Update()

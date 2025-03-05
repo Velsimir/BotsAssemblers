@@ -50,7 +50,6 @@ namespace CodeBase.Services
                 TSpawnableObjet spawnableObjet = _pool[0];
                 _pool.Remove(spawnableObjet);
                 spawnableObjet.Dissapear += Add;
-                
                 return spawnableObjet;
             }
 
