@@ -6,13 +6,13 @@ using CodeBase.ResourceLogic;
 
 namespace CodeBase.MainBase
 {
-    public class ResourceHandler : IDisposable
+    public class ResourceSearcher : IDisposable
     {
         private readonly Scanner<Resource> _scanner;
         private readonly List<Resource> _reservedResources;
         private readonly List<Resource> _foundedNewResources;
         
-        public ResourceHandler(Scanner<Resource> scanner)
+        public ResourceSearcher(Scanner<Resource> scanner)
         {
             _reservedResources = new List<Resource>();
             _foundedNewResources = new List<Resource>();
@@ -21,7 +21,7 @@ namespace CodeBase.MainBase
             _scanner.ScanFinished += AddNewResources;
         }
         
-        public event Action NewResourcesAdded; 
+        public event Action NewResourcesFounded; 
 
         public bool TryGetResource(out Resource resource)
         {
@@ -55,7 +55,7 @@ namespace CodeBase.MainBase
             
             _foundedNewResources.AddRange(newResources);
             
-            NewResourcesAdded?.Invoke();
+            NewResourcesFounded?.Invoke();
         }
 
         public void Dispose()

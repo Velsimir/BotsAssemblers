@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CodeBase.Bootstraps
 {
+    [RequireComponent(typeof(CoroutinesHandler))]
     public class BaseBootstrap : MonoBehaviour
     {
         [SerializeField] private Base _base;
@@ -13,15 +14,14 @@ namespace CodeBase.Bootstraps
         [SerializeField] private BaseData _baseData;
         [SerializeField] private TMP_Text _textResourceCollectorValue;
         
-        private GameBootstrap _gameBootstrap;
         private Scanner<Resource> _scanner;
 
-        public void Initialize(CoroutinesHandler coroutinesHandler, GameBootstrap gameBootstrap)
+        public void Awake()
         {
-            _scanner = new Scanner<Resource>(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(new ResourceHandler(_scanner), new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _baseData.ResourcesToSpawnNewUnit);
+            CoroutinesHandler coroutinesHandler = GetComponent<CoroutinesHandler>();
             
-            _gameBootstrap = gameBootstrap;
+            _scanner = new Scanner<Resource>(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
+            _base.Initialize(new ResourceSearcher(_scanner), new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _resourceCollector, _baseData.ResourcesToSpawnNewUnit);
             
             new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
         }

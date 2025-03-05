@@ -7,20 +7,25 @@ namespace CodeBase.MainBase
     public class Base : MonoBehaviour
     {
         [SerializeField] private BoxCollider _spawnUnitArea;
-        [SerializeField] private ResourceCollector _resourceCollector;
         
-        private ResourceHandler _resourceHandler;
+        private ResourceCollector _resourceCollector;
+        private ResourceSearcher _resourceSearcher;
         private UnitSpawner _spawner;
         private UnitsHandler _unitsHandler;
         private int _resourcesToSpawnNewUnit;
 
-        public void Initialize(ResourceHandler resourceHandler, UnitSpawner spawner, int resourcesToSpawnNewUnit)
+        public void Initialize(ResourceSearcher resourceSearcher, UnitSpawner spawner, ResourceCollector resourceCollector, int resourcesToSpawnNewUnit)
         {
             _spawner = spawner;
-            _resourceHandler = resourceHandler;
-            _resourceHandler.NewResourcesAdded += SendTaskToMine;
+            
+            _resourceSearcher = resourceSearcher;
+            _resourceSearcher.NewResourcesFounded += SendTaskToMine;
+            
             _unitsHandler = new UnitsHandler();
-
+            
+            _resourceCollector = resourceCollector;
+            _resourceCollector.ValueChanged += TrySpawnNewUnit;
+            
             _resourcesToSpawnNewUnit = resourcesToSpawnNewUnit;
             
             SpawnUnit();
@@ -28,12 +33,13 @@ namespace CodeBase.MainBase
 
         private void OnDisable()
         {
-            _resourceHandler.NewResourcesAdded -= SendTaskToMine;
+            _resourceSearcher.NewResourcesFounded -= SendTaskToMine;
+            _resourceCollector.ValueChanged -= TrySpawnNewUnit;
         }
 
         private async void SendTaskToMine()
         {
-            while (_resourceHandler.TryGetResource(out Resource resource))
+            while (_resourceSearcher.TryGetResource(out Resource resource))
             {
                 await _unitsHandler.SendUnitToMineAsync(resource);
             }
@@ -41,9 +47,10 @@ namespace CodeBase.MainBase
 
         private void TrySpawnNewUnit()
         {
-            //if (_resourceHandler)
+            if (_resourceCollector.CollectedResources >= _resourcesToSpawnNewUnit)
             {
-                
+                SpawnUnit();
+                _resourceCollector.Spend(_resourcesToSpawnNewUnit);
             }
         }
 

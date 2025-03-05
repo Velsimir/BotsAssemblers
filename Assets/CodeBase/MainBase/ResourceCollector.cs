@@ -4,27 +4,29 @@ using UnityEngine;
 
 namespace CodeBase.MainBase
 {
+    [RequireComponent(typeof(BoxCollider))]
     public class ResourceCollector : MonoBehaviour
     {
-        private int _collectedResources;
+        public int CollectedResources { get; private set; }
 
-        public event Action<int> ValueChanged;
+        public event Action ValueChanged;
 
         private void OnTriggerEnter(Collider collider)
         {
             if (collider.transform.TryGetComponent(out ICollectable collectable))
             {
                 collectable.Collect();
-                _collectedResources++;
-                ValueChanged?.Invoke(_collectedResources);
+                CollectedResources++;
+                ValueChanged?.Invoke();
             }
         }
 
-        private void Spend(int amount)
+        public void Spend(int amount)
         {
-            if (_collectedResources >= amount )
+            if (CollectedResources >= amount )
             {
-                _collectedResources -= amount;
+                CollectedResources -= amount;
+                ValueChanged?.Invoke();
             }
         }
     }

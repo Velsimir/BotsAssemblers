@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using UnityEngine;
 
 namespace CodeBase.MainBase
 {
@@ -17,9 +18,9 @@ namespace CodeBase.MainBase
             _textCounterValue.text = "";
         }
 
-        private void UpdateView(int value)
+        private void UpdateView()
         {
-            _textCounterValue.text = value.ToString();
+            _textCounterValue.text = _resourceCollector.CollectedResources.ToString();
         }
 
         public void Dispose()
