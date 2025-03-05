@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.ResourceLogic;
@@ -17,8 +18,8 @@ namespace CodeBase.MainBase
             _allUnits = new List<Unit>();
             _pendingRequests = new Queue<TaskCompletionSource<Unit>>();
         }
-        
-        public int AllUnitsCount => _allUnits.Count;
+
+        public bool HasFreeUnits => _freeUnits.Count > 0;
 
         public async Task SendUnitToMineAsync(Resource resource)
         {
@@ -40,6 +41,7 @@ namespace CodeBase.MainBase
             if (_freeUnits.Count > 0)
             {
                 Unit unit = _freeUnits[0];
+                _freeUnits.Remove(unit);
                 return Task.FromResult(unit);
             }
             else

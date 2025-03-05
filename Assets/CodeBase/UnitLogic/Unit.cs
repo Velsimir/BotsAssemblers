@@ -17,9 +17,10 @@ namespace CodeBase.UnitLogic
         private readonly float _radiusMine = 1f;
         private UnitStateMachine _stateMachine;
         private Vector3 _basePosition;
-        private bool _isBackPackFull;
+        private Resource _currentResource;
 
         public event Action<Unit> ReturnedOnBase;
+        public event Action ResourceCollected;
         public event Action<ISpawnable> Dissapear;
 
         public UnitAnimator Animator { get; private set; }
@@ -39,8 +40,6 @@ namespace CodeBase.UnitLogic
 
             Miner = new Miner(transform, _radiusMine, coroutinesHandler);
             Miner.MiningDone += InteractWithResource;
-            
-            _isBackPackFull = false;
         }
 
         private void Update()
@@ -66,10 +65,12 @@ namespace CodeBase.UnitLogic
 
         private void ChangeState()
         {
-            if (_isBackPackFull)
+            if (_currentResource != null)
             {
                 _stateMachine.Switch<IdleState>();
-                _isBackPackFull = false;
+                _currentResource.Collect();
+                ResourceCollected?.Invoke();
+                _currentResource = null;
                 ReturnedOnBase?.Invoke(this);
             }
             else
@@ -85,7 +86,7 @@ namespace CodeBase.UnitLogic
             NavMesh.SetDestination(_basePosition);
             _stateMachine.Switch<RunningState>();
             
-            _isBackPackFull = true;
+            _currentResource = interactable as Resource;
         }
     }
 }

@@ -9,21 +9,23 @@ namespace CodeBase.Bootstraps
     [RequireComponent(typeof(CoroutinesHandler))]
     public class BaseBootstrap : MonoBehaviour
     {
-        [SerializeField] private Base _base;
-        [SerializeField] private ResourceCollector _resourceCollector;
         [SerializeField] private BaseData _baseData;
         [SerializeField] private TMP_Text _textResourceCollectorValue;
         
-        private Scanner<Resource> _scanner;
+        private Base _base;
+        private Scanner _scanner;
 
         public void Initialize(ResourceHandler resourceHandler)
         {
+            _base = GetComponent<Base>();
+            ResourceCollector resourceCollector = new ResourceCollector();
+            new ResourceCollectorView(resourceCollector, _textResourceCollectorValue);
+            
             CoroutinesHandler coroutinesHandler = GetComponent<CoroutinesHandler>();
+            UnitSpawner unitSpawner = new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler);
             
-            _scanner = new Scanner<Resource>(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(_scanner, resourceHandler, new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _resourceCollector, _baseData.ResourcesToSpawnNewUnit);
-            
-            new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
+            _scanner = new Scanner(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
+            _base.Initialize(_scanner, unitSpawner, _baseData.ResourcesToSpawnNewUnit, resourceCollector, resourceHandler);
         }
     }
 }

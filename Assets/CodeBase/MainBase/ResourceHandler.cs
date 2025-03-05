@@ -7,9 +7,9 @@ namespace CodeBase.MainBase
 {
     public class ResourceHandler : IDisposable
     {
-        private readonly Scanner<Resource> _scanner;
+        private readonly Scanner _scanner;
         private readonly List<Resource> _reservedResources;
-        private ResourceSpawner _resourceSpawner;
+        private readonly ResourceSpawner _resourceSpawner;
 
         public ResourceHandler(ResourceSpawner resourceSpawner)
         {
@@ -17,7 +17,7 @@ namespace CodeBase.MainBase
             _resourceSpawner = resourceSpawner;
             _resourceSpawner.ResourceSpawned += RemoveFromReserved;
         }
-        
+
         public bool TryGetResource(ref Resource resource)
         {
             if (_reservedResources.Contains(resource))

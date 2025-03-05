@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Interfaces;
+using CodeBase.ResourceLogic;
 using CodeBase.Services;
 using UnityEngine;
 
 namespace CodeBase.MainBase
 {
-    public class Scanner<TObjectToSearch> where TObjectToSearch : ICollectable, IInteractable
+    public class Scanner
     {
         private readonly float _delay;
         private readonly float _radius;
@@ -26,7 +27,7 @@ namespace CodeBase.MainBase
             StartScanning();
         }
         
-        public event Action<List<TObjectToSearch>> ScanFinished;
+        public event Action<Queue<Resource>> ScanFinished;
         
         private void StartScanning()
         {
@@ -51,18 +52,18 @@ namespace CodeBase.MainBase
 
         private void FindObjects()
         {
-            List<TObjectToSearch> collectables = new List<TObjectToSearch>();
+            Queue<Resource> collectables = new Queue<Resource>();
             
             Collider[] colliders = Physics.OverlapSphere(_centerPoint.position, _radius);
 
             foreach (var collider in colliders)
             {
-                if (collider.gameObject.TryGetComponent(out TObjectToSearch collectableResource))
+                if (collider.gameObject.TryGetComponent(out Resource collectableResource))
                 {
-                    collectables.Add(collectableResource);
+                    collectables.Enqueue(collectableResource);
                 }
             }
-
+            
             if (collectables.Count > 0)
             {
                 ScanFinished?.Invoke(collectables);

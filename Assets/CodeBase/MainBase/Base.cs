@@ -8,29 +8,30 @@ namespace CodeBase.MainBase
     public class Base : MonoBehaviour
     {
         [SerializeField] private BoxCollider _spawnUnitArea;
-        
+
         private ResourceCollector _resourceCollector;
-        private Scanner<Resource> _scanner;
+        private Scanner _scanner;
         private UnitSpawner _spawner;
-        private ResourceHandler _resourceHandler;
         private UnitsHandler _unitsHandler;
+        private ResourceHandler _resourceHandler;
         private int _resourcesToSpawnNewUnit;
 
-        public void Initialize(Scanner<Resource> scanner, ResourceHandler resourceHandler, UnitSpawner spawner, ResourceCollector resourceCollector, int resourcesToSpawnNewUnit)
+        public void Initialize(Scanner scanner, UnitSpawner spawner, int resourcesToSpawnNewUnit, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
         {
             _spawner = spawner;
+
+            _resourceCollector = resourceCollector;
+            _resourceCollector.ValueChanged += TrySpawnNewUnit;
+
             _resourceHandler = resourceHandler;
             
             _scanner = scanner;
             _scanner.ScanFinished += SendTaskToMine;
-            
+
             _unitsHandler = new UnitsHandler();
-            
-            _resourceCollector = resourceCollector;
-            _resourceCollector.ValueChanged += TrySpawnNewUnit;
-            
+
             _resourcesToSpawnNewUnit = resourcesToSpawnNewUnit;
-            
+
             SpawnUnit();
         }
 
@@ -40,17 +41,18 @@ namespace CodeBase.MainBase
             _resourceCollector.ValueChanged -= TrySpawnNewUnit;
         }
 
-        private async void SendTaskToMine(List<Resource> resources)
+        private async void SendTaskToMine(Queue<Resource> resources)
         {
-            foreach (var resource in resources)
+            while (_unitsHandler.HasFreeUnits && resources.Count > 0)
             {
-                Resource resourceToSend = resource;
+                Resource resource = resources.Dequeue();
 
-                if (_resourceHandler.TryGetResource(ref resourceToSend))
+                if (_resourceHandler.TryGetResource(ref resource))
                 {
                     await _unitsHandler.SendUnitToMineAsync(resource);
                 }
-            }
+  
+            } 
         }
 
         private void TrySpawnNewUnit()
@@ -65,8 +67,18 @@ namespace CodeBase.MainBase
         private void SpawnUnit()
         {
             Unit unit = _spawner.GetUnit(_spawnUnitArea);
-            
+            unit.ResourceCollected += CollectResource;
             _unitsHandler.AddNewUnit(unit);
+        }
+
+        private void CollectResource()
+        {
+            _resourceCollector.IncreaseResources();
+        }
+
+        private void RemoveUnitFromBase()
+        {
+            //unit.ResourceCollected -= CollectResource;
         }
     }
 }

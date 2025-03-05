@@ -1,24 +1,17 @@
 using System;
-using CodeBase.Interfaces;
-using UnityEngine;
 
 namespace CodeBase.MainBase
 {
-    [RequireComponent(typeof(BoxCollider))]
-    public class ResourceCollector : MonoBehaviour
+    public class ResourceCollector
     {
         public int CollectedResources { get; private set; }
 
         public event Action ValueChanged;
 
-        private void OnTriggerEnter(Collider collider)
+        public void IncreaseResources()
         {
-            if (collider.transform.TryGetComponent(out ICollectable collectable))
-            {
-                collectable.Collect();
-                CollectedResources++;
-                ValueChanged?.Invoke();
-            }
+            CollectedResources ++;
+            ValueChanged?.Invoke();
         }
 
         public void Spend(int amount)
