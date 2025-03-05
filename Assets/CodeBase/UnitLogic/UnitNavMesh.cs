@@ -10,9 +10,15 @@ namespace CodeBase.UnitLogic
         private readonly NavMeshAgent _agent;
         private Vector3 _destination;
 
-        public UnitNavMesh(NavMeshAgent agent)
+        public UnitNavMesh(NavMeshAgent agent, Vector3 startPoint)
         {
             _agent = agent;
+            RefreshStartPosition(startPoint);
+        }
+
+        private void RefreshStartPosition(Vector3 startPoint)
+        {
+            _agent.Warp(startPoint);
         }
 
         public event Action DestinationReached;

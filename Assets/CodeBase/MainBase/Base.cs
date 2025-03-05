@@ -14,14 +14,12 @@ namespace CodeBase.MainBase
         
         private List<Unit> _units;
         private ResourceHandler _resourceHandler;
-        private ResourceCollector _resourceCollector;
 
-        public void Initialize(ResourceHandler resourceHandler, ResourceCollector resourceCollector, UnitSpawner spawner)
+        public void Initialize(ResourceHandler resourceHandler, UnitSpawner spawner)
         {
             _units = new List<Unit>();
             _resourceHandler = resourceHandler;
             _resourceHandler.NewResourcesAdded += TrySendUnitsToMine;
-            _resourceCollector = resourceCollector;
 
             _units.Add(spawner.GetUnit(_spawnUnitArea));
         }

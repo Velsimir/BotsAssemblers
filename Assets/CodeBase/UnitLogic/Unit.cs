@@ -14,11 +14,11 @@ namespace CodeBase.UnitLogic
     {
         [SerializeField] private Transform _resourceHolder;
         
+        private readonly float _radiusMine = 1f;
         private UnitStateMachine _stateMachine;
         private Vector3 _basePosition;
         private Quaternion _baseRotation;
         private bool _isBackPackFull;
-        private float _radiusMine = 1f;
 
         public event Action<Unit> ReturnedOnBase;
         public event Action<ISpawnable> Dissapear;
@@ -29,22 +29,20 @@ namespace CodeBase.UnitLogic
 
         public void Initialize(Vector3 basePosition, CoroutinesHandler coroutinesHandler)
         {
+            _basePosition = basePosition;
+            _baseRotation = transform.rotation;
+
             Animator = new UnitAnimator(GetComponent<Animator>());
             
-            NavMesh = new UnitNavMesh(GetComponent<NavMeshAgent>());
+            NavMesh = new UnitNavMesh(GetComponent<NavMeshAgent>(), _basePosition);
             NavMesh.DestinationReached += ChangeState;
             
             _stateMachine = new UnitStateMachine(this);
-            
-            _basePosition = basePosition;
-            _baseRotation = transform.rotation;
 
             Miner = new Miner(transform, _radiusMine, coroutinesHandler);
             Miner.MiningDone += InteractWithResource;
             
             _isBackPackFull = false;
-            
-            transform.position = _basePosition;
         }
 
         private void Update()
@@ -58,6 +56,7 @@ namespace CodeBase.UnitLogic
         private void OnDisable()
         {
             NavMesh.DestinationReached -= ChangeState;
+            Dissapear?.Invoke(this);
         }
 
         public void Restart()

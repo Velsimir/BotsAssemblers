@@ -19,7 +19,7 @@ namespace CodeBase.Bootstraps
         public void Initialize(CoroutinesHandler coroutinesHandler, GameBootstrap gameBootstrap)
         {
             _scanner = new Scanner<Resource>(_data.RadiusToSearchResources, _data.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(new ResourceHandler(_scanner), _resourceCollector, new UnitSpawner(_data.UnitPrefab, coroutinesHandler));
+            _base.Initialize(new ResourceHandler(_scanner), new UnitSpawner(_data.UnitPrefab, coroutinesHandler));
             
             _gameBootstrap = gameBootstrap;
             _gameBootstrap.GameRestarted += Restart;
