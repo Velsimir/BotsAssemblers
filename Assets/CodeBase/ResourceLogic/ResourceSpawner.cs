@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CodeBase.Services;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace CodeBase.ResourceLogic
 {
@@ -25,7 +27,9 @@ namespace CodeBase.ResourceLogic
             _allSpawnedResources = new List<Resource>();
             _coroutineHandler = coroutineHandler;
         }
-
+        
+        public event Action<Resource> ResourceSpawned;
+        
         public void StartSpawn()
         {
             if (_spawnCoroutine != null)
@@ -52,6 +56,8 @@ namespace CodeBase.ResourceLogic
             for (int i = 0; i < Random.Range(_minResources, _maxResources); i++)
             {
                 Resource resource = _spawner.Spawn();
+                
+                ResourceSpawned?.Invoke(resource);
 
                 if (_allSpawnedResources.Contains(resource) == false)
                 {

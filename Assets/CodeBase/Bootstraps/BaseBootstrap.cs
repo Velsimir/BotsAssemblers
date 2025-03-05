@@ -16,12 +16,12 @@ namespace CodeBase.Bootstraps
         
         private Scanner<Resource> _scanner;
 
-        public void Awake()
+        public void Initialize(ResourceHandler resourceHandler)
         {
             CoroutinesHandler coroutinesHandler = GetComponent<CoroutinesHandler>();
             
             _scanner = new Scanner<Resource>(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(new ResourceSearcher(_scanner), new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _resourceCollector, _baseData.ResourcesToSpawnNewUnit);
+            _base.Initialize(_scanner, resourceHandler, new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler), _resourceCollector, _baseData.ResourcesToSpawnNewUnit);
             
             new ResourceCollectorView(_resourceCollector, _textResourceCollectorValue);
         }

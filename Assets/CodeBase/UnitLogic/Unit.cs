@@ -17,7 +17,6 @@ namespace CodeBase.UnitLogic
         private readonly float _radiusMine = 1f;
         private UnitStateMachine _stateMachine;
         private Vector3 _basePosition;
-        private Quaternion _baseRotation;
         private bool _isBackPackFull;
 
         public event Action<Unit> ReturnedOnBase;
@@ -30,7 +29,6 @@ namespace CodeBase.UnitLogic
         public void Initialize(Vector3 basePosition, CoroutinesHandler coroutinesHandler)
         {
             _basePosition = basePosition;
-            _baseRotation = transform.rotation;
 
             Animator = new UnitAnimator(GetComponent<Animator>());
             

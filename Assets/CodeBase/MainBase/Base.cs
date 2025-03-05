@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
@@ -9,17 +10,19 @@ namespace CodeBase.MainBase
         [SerializeField] private BoxCollider _spawnUnitArea;
         
         private ResourceCollector _resourceCollector;
-        private ResourceSearcher _resourceSearcher;
+        private Scanner<Resource> _scanner;
         private UnitSpawner _spawner;
+        private ResourceHandler _resourceHandler;
         private UnitsHandler _unitsHandler;
         private int _resourcesToSpawnNewUnit;
 
-        public void Initialize(ResourceSearcher resourceSearcher, UnitSpawner spawner, ResourceCollector resourceCollector, int resourcesToSpawnNewUnit)
+        public void Initialize(Scanner<Resource> scanner, ResourceHandler resourceHandler, UnitSpawner spawner, ResourceCollector resourceCollector, int resourcesToSpawnNewUnit)
         {
             _spawner = spawner;
+            _resourceHandler = resourceHandler;
             
-            _resourceSearcher = resourceSearcher;
-            _resourceSearcher.NewResourcesFounded += SendTaskToMine;
+            _scanner = scanner;
+            _scanner.ScanFinished += SendTaskToMine;
             
             _unitsHandler = new UnitsHandler();
             
@@ -33,15 +36,20 @@ namespace CodeBase.MainBase
 
         private void OnDisable()
         {
-            _resourceSearcher.NewResourcesFounded -= SendTaskToMine;
+            _scanner.ScanFinished -= SendTaskToMine;
             _resourceCollector.ValueChanged -= TrySpawnNewUnit;
         }
 
-        private async void SendTaskToMine()
+        private async void SendTaskToMine(List<Resource> resources)
         {
-            while (_resourceSearcher.TryGetResource(out Resource resource))
+            foreach (var resource in resources)
             {
-                await _unitsHandler.SendUnitToMineAsync(resource);
+                Resource resourceToSend = resource;
+
+                if (_resourceHandler.TryGetResource(ref resourceToSend))
+                {
+                    await _unitsHandler.SendUnitToMineAsync(resource);
+                }
             }
         }
 

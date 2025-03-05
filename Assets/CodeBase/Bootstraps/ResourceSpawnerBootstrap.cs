@@ -26,6 +26,8 @@ namespace CodeBase.Bootstraps
             
             _gameBootstrap = gameBootstrap;
         }
+        
+        public ResourceSpawner ResourceSpawner => _resourceSpawner;
 
         private List<ResourceNode> GetAllCollidersToSpawn()
         {

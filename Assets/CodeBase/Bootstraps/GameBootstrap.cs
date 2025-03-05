@@ -1,3 +1,5 @@
+using CodeBase.BaseSpawnerLogic;
+using CodeBase.MainBase;
 using CodeBase.Services;
 using UnityEngine;
 
@@ -8,7 +10,9 @@ namespace CodeBase.Bootstraps
     public class GameBootstrap : MonoBehaviour
     {
         private ResourceSpawnerBootstrap _resourceSpawnerBootstrap;
+        private BuildingSpawner _buildingSpawner;
         private CoroutinesHandler _coroutinesHandler;
+        private ResourceHandler _resourceHandler;
         
         private void Awake()
         {
@@ -16,6 +20,12 @@ namespace CodeBase.Bootstraps
             
             _resourceSpawnerBootstrap = GetComponent<ResourceSpawnerBootstrap>();
             _resourceSpawnerBootstrap.Initialize(_coroutinesHandler, this);
+            
+            _resourceHandler = new ResourceHandler(_resourceSpawnerBootstrap.ResourceSpawner);
+            
+            _buildingSpawner = GetComponent<BuildingSpawner>();
+            _buildingSpawner.Initialize(_resourceHandler);
+            
         }
     }
 }
