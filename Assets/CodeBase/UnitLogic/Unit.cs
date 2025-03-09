@@ -41,14 +41,10 @@ namespace CodeBase.UnitLogic
             }
         }
 
-        private void OnDisable()
-        {
-            Dissapear?.Invoke(this);
-        }
-
         public void Deactivate()
         {
             BuildingDone?.Invoke();
+            Dissapear?.Invoke(this);
             gameObject.SetActive(false);
         }
 

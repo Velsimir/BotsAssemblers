@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.BaseSpawnerLogic;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
@@ -18,13 +19,12 @@ namespace CodeBase.MainBase
         private UnitSpawner _spawner;
         private UnitsHandler _unitsHandler;
         private ResourceHandler _resourceHandler;
+        private BaseFlag _flag;
         
-        public bool IsEnoughUnits => _unitsHandler.AllUnits.Count >= ResourcesToSpawnNewUnit;
-
         public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
         {
             _spawner = spawner;
-
+            _flag = Resources.Load<BaseFlag>("Prefabs/Flag");
             _resourceCollector = resourceCollector;
             _resourceCollector.ValueChanged += TrySpawnNewUnit;
 
@@ -34,7 +34,6 @@ namespace CodeBase.MainBase
             _scanner.ScanFinished += SendTaskToMine;
 
             _unitsHandler = new UnitsHandler();
-
             SpawnUnit();
         }
 
@@ -49,7 +48,7 @@ namespace CodeBase.MainBase
             }
         }
 
-        public async Task SendUnitToBuild(Vector3 position)
+        public async Task SendUnitToBuild(Vector3 position, BaseBuilder baseBuilder)
         {
             if (_unitsHandler.AllUnits.Count < MinUnitsToBuildNewBase)
             {
@@ -57,7 +56,21 @@ namespace CodeBase.MainBase
                 return;
             }
 
+            SetFlag(position);
             await _unitsHandler.SendUnitToBuildAsync(position);
+            baseBuilder.TakeUnitBuilder(_unitsHandler.BuilderUnit);
+        }
+        
+        private void SetFlag(Vector3 position)
+        {
+            if (_flag.IsInitialized == false)
+            {
+                _flag = Instantiate(_flag);
+                _flag.Initialize();
+            }
+            
+            _flag.gameObject.SetActive(true);
+            _flag.Move(position);
         }
 
         private void SendTaskToMine(Queue<Resource> resources)
@@ -65,8 +78,8 @@ namespace CodeBase.MainBase
             while (resources.Count > 0)
             {
                 Resource resource = resources.Dequeue();
-
-                if (_resourceHandler.TryGetFreeResource(ref resource))
+                
+                if (_unitsHandler.HasFreeTasks && _resourceHandler.TryGetFreeResource(ref resource))
                 {
                     _unitsHandler.SendTaskToMineAsync(resource.transform.position);
                 }

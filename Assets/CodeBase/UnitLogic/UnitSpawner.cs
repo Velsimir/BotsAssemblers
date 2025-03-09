@@ -17,7 +17,7 @@ namespace CodeBase.UnitLogic
         public Unit GetUnit(Collider baseArea)
         {
             Unit unit = _spawner.Spawn();
-            
+
             unit.Initialize(GetSpawnPosition(baseArea), _coroutineHandler);
             
             return unit;

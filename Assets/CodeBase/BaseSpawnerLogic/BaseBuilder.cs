@@ -2,6 +2,7 @@ using System;
 using CodeBase.Bootstraps;
 using CodeBase.MainBase;
 using CodeBase.MouseInteractLogic;
+using CodeBase.UnitLogic;
 using UnityEngine;
 
 namespace CodeBase.BaseSpawnerLogic
@@ -10,31 +11,36 @@ namespace CodeBase.BaseSpawnerLogic
     {
         private readonly Vector3 _spawnPositionForFirstBase = Vector3.zero;
         private BaseBootstrap _baseBootstrapPrefab;
-        private BaseFlag _baseFlag;
         private ResourceHandler _resourceHandler;
         private CursorInteractLogic _cursorInteractLogic;
         private Base _currentBase;
+        private Unit _builderUnit;
 
         public void Initialize(ResourceHandler resourceHandler, CursorInteractLogic cursorInteractLogic)
         {
             _baseBootstrapPrefab = Resources.Load<BaseBootstrap>("Prefabs/Base");
-            _baseFlag = Resources.Load<BaseFlag>("Prefabs/Flag");
             _resourceHandler = resourceHandler;
             _cursorInteractLogic = cursorInteractLogic;
             _cursorInteractLogic.LeftClick += TrySelectBase;
             _cursorInteractLogic.RightClick += TrySpawnBase;
 
-            CreateFirstBase();
+            InstantiateAndInitializeBase(_spawnPositionForFirstBase);
+        }
+
+        public void TakeUnitBuilder(Unit unit)
+        {
+            _builderUnit = unit;
+            _builderUnit.BuildingDone += CreateBase;
         }
 
         private void TrySpawnBase(RaycastHit hit)
         {
-            if (_currentBase == null || _currentBase.IsEnoughUnits == false)
+            if (_currentBase == null)
                 return;
             
             if (hit.collider.gameObject.TryGetComponent(out ConstructionZone constructionZone))
             {
-                SetFlag(hit.point);
+                _currentBase.SendUnitToBuild(hit.point, this);
             }
         }
 
@@ -55,21 +61,20 @@ namespace CodeBase.BaseSpawnerLogic
             }
         }
 
-        private void SetFlag(Vector3 position)
+        private void CreateBase()
         {
-            if (_baseFlag.IsInitialized == false)
-            {
-                _baseFlag = Instantiate(_baseFlag);
-                _baseFlag.Initialize();
-            }
-            
-            _baseFlag.Move(position);
+            InstantiateAndInitializeBase(_builderUnit.transform.position);
         }
 
-        private void CreateFirstBase()
+        private void InstantiateAndInitializeBase(Vector3 position)
         {
-            _baseBootstrapPrefab = Instantiate(_baseBootstrapPrefab, _spawnPositionForFirstBase, Quaternion.identity);
+            _baseBootstrapPrefab = Instantiate(_baseBootstrapPrefab, position, Quaternion.identity);
             _baseBootstrapPrefab.Initialize(_resourceHandler);
+
+            if (_builderUnit != null)
+            {
+                _builderUnit.BuildingDone -= CreateBase;
+            }
         }
     }
 }

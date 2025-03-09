@@ -13,7 +13,7 @@ namespace CodeBase.MouseInteractLogic
     
         private void Awake()
         {
-            _camera = GetComponent<Camera>();
+            _camera = FindAnyObjectByType<Camera>();
         }
 
         private void Update()
@@ -21,13 +21,11 @@ namespace CodeBase.MouseInteractLogic
             if (Input.GetMouseButtonDown(0))
             {
                 LeftClick?.Invoke(GetRayCastHitByClick());
-                //SelectBase();
             }
 
             if (Input.GetMouseButtonDown(1))
             {
                 RightClick?.Invoke(GetRayCastHitByClick());
-                //_currentBase.SendUnitToBuild(GetMousePositionByRayCast(GetRayCastHitByClick()), _baseBuilder);
             }
         }
 
@@ -36,25 +34,6 @@ namespace CodeBase.MouseInteractLogic
             Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit);
         
             return hit;
-        }
-
-        private Vector3 GetMousePositionByRayCast(RaycastHit hit)
-        {
-            return hit.point;
-        }
-
-        private bool TrySelectBase(RaycastHit hit, out Base selectedBase)
-        {
-            if (hit.collider.gameObject.TryGetComponent(out Base @base))
-            {
-                selectedBase = @base;
-                return true;
-            }
-            else
-            {
-                selectedBase = null;
-                return false;
-            }
         }
     }
 }

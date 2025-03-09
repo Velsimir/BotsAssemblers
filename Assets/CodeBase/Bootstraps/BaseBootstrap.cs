@@ -1,5 +1,4 @@
 using CodeBase.MainBase;
-using CodeBase.ResourceLogic;
 using CodeBase.Services;
 using CodeBase.UnitLogic;
 using TMPro;
@@ -19,6 +18,7 @@ namespace CodeBase.Bootstraps
         public void Initialize(ResourceHandler resourceHandler)
         {
             _base = GetComponent<Base>();
+            
             ResourceCollector resourceCollector = new ResourceCollector();
             new ResourceCollectorView(resourceCollector, _textResourceCollectorValue);
             
@@ -27,6 +27,7 @@ namespace CodeBase.Bootstraps
             
             _scanner = new Scanner(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
             _base.Initialize(_scanner, unitSpawner, resourceCollector, resourceHandler);
+            
         }
     }
 }

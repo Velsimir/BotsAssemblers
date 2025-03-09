@@ -12,27 +12,30 @@ namespace CodeBase.UnitLogic
         private TaskCompletionSource<Unit> _requestToBuild;
         private readonly int _maxTask = 5;
 
-        private Unit _builderUnit;
-
         public UnitsHandler()
         {
             _freeUnits = new List<Unit>();
             _allUnits = new List<Unit>();
             _pendingRequests = new Queue<TaskCompletionSource<Unit>>();
         }
-        
+
+        public Unit BuilderUnit { get; private set; }
+        public bool HasFreeTasks => _pendingRequests.Count < _maxTask;
+
         public List<Unit> AllUnits => _allUnits;
         
         public async Task SendUnitToBuildAsync(Vector3 position)
         {
-            if (_builderUnit == null)
+            if (BuilderUnit == null)
             {
-                _builderUnit = await GetFreeUnitAsync(true);
-                _freeUnits.Remove(_builderUnit);
+                BuilderUnit = await GetFreeUnitAsync(true);
+                _freeUnits.Remove(BuilderUnit);
+                _allUnits.Remove(BuilderUnit);
             }
             
-            _builderUnit.SendNewTask(position, UnitTask.Build);
+            BuilderUnit.SendNewTask(position, UnitTask.Build);
 
+            BuilderUnit = null;
             _requestToBuild = null;
         }
         
@@ -92,14 +95,12 @@ namespace CodeBase.UnitLogic
         {
             if (_requestToBuild != null)
             {
-                Debug.Log("Sending new task to build");
                 _requestToBuild.SetResult(unit);
                 return;
             }
 
             if (_pendingRequests.Count > 0)
             {
-                Debug.Log("Sending new task to mine");
                 TaskCompletionSource<Unit> newTask = _pendingRequests.Dequeue();
                 newTask.SetResult(unit);
             }
