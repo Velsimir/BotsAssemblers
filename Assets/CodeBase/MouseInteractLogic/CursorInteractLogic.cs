@@ -1,8 +1,11 @@
+using CodeBase.BaseSpawnerLogic;
 using CodeBase.MainBase;
 using UnityEngine;
 
 public class CursorInteractLogic : MonoBehaviour
 {
+    [SerializeField] private BaseBuilder _baseBuilder;
+    
     private Camera _camera;
     private Base _currentBase;
 
@@ -21,6 +24,7 @@ public class CursorInteractLogic : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && _currentBase != null)
         {
             _currentBase.SendUnitToBuild(GetMousePositionByRayCast(GetRayCastHitByClick()));
+            _baseBuilder.SpawnFlagAtMousePosition();
         }
     }
 

@@ -53,7 +53,6 @@ namespace CodeBase.UnitLogic
 
         public void SendNewTask(Vector3 position, UnitTask currentTask)
         {
-            Debug.Log($"Sending new task");
             CurrentTask = currentTask;
             GetPositionToRun(position);
         }

@@ -1,35 +1,36 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CodeBase.UnitLogic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-namespace CodeBase.MainBase
+namespace CodeBase.UnitLogic
 {
     public class UnitsHandler 
     {
         private readonly List<Unit> _freeUnits;
-        private readonly List<Unit> _allUnits;
         private readonly Queue<TaskCompletionSource<Unit>> _pendingRequests;
+        private TaskCompletionSource<Unit> _requestToBuild;
+        private readonly int _maxTask = 5;
 
-        private Unit _unitBuilder;
-        private int _maxTask = 5;
+        private Unit _builderUnit;
 
         public UnitsHandler()
         {
             _freeUnits = new List<Unit>();
-            _allUnits = new List<Unit>();
             _pendingRequests = new Queue<TaskCompletionSource<Unit>>();
         }
         
         public async Task SendUnitToBuildAsync(Vector3 position)
         {
-            if (_unitBuilder == null)
+            if (_builderUnit == null)
             {
-                _unitBuilder = await GetFreeUnitAsync();
-                _freeUnits.Remove(_unitBuilder);
+                _builderUnit = await GetFreeUnitAsync(true);
+                _freeUnits.Remove(_builderUnit);
             }
             
-            _unitBuilder.SendNewTask(position, UnitTask.Build);
+            _builderUnit.SendNewTask(position, UnitTask.Build);
+
+            _requestToBuild = null;
         }
         
         public async Task SendTaskToMineAsync(Vector3 position)
@@ -43,18 +44,16 @@ namespace CodeBase.MainBase
             _freeUnits.Remove(unit);
             
             unit.ReturnedOnBase += AddFreeUnit;
-            unit.ReturnedOnBase += TrySendFreeUnitNewTask;
         }
 
         public void AddNewUnit(Unit unit)
         {
             _freeUnits.Add(unit);
-            _allUnits.Add(unit);
 
             TrySendFreeUnitNewTask(unit);
         }
 
-        private Task<Unit> GetFreeUnitAsync()
+        private Task<Unit> GetFreeUnitAsync(bool priority = false)
         {
             if (_freeUnits.Count > 0)
             {
@@ -64,9 +63,17 @@ namespace CodeBase.MainBase
             }
             else
             {
-                TaskCompletionSource<Unit> newTask = new TaskCompletionSource<Unit>();
-                _pendingRequests.Enqueue(newTask);
-                return newTask.Task;
+                if (priority)
+                {
+                    _requestToBuild = new TaskCompletionSource<Unit>();
+                    return _requestToBuild.Task;
+                }
+                else
+                {
+                    TaskCompletionSource<Unit> newTask = new TaskCompletionSource<Unit>();
+                    _pendingRequests.Enqueue(newTask);
+                    return newTask.Task;
+                }
             }
         }
 
@@ -74,14 +81,22 @@ namespace CodeBase.MainBase
         {
             _freeUnits.Add(unit);
             unit.ReturnedOnBase -= AddFreeUnit;
+            TrySendFreeUnitNewTask(unit);
         }
 
         private void TrySendFreeUnitNewTask(Unit unit)
         {
+            if (_requestToBuild != null)
+            {
+                Debug.Log("Sending new task to build");
+                _requestToBuild.SetResult(unit);
+                return;
+            }
+
             if (_pendingRequests.Count > 0)
             {
+                Debug.Log("Sending new task to mine");
                 TaskCompletionSource<Unit> newTask = _pendingRequests.Dequeue();
-                unit.ReturnedOnBase -= TrySendFreeUnitNewTask;
                 newTask.SetResult(unit);
             }
         }

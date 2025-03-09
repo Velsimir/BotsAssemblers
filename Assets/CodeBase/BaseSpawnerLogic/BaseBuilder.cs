@@ -20,7 +20,7 @@ namespace CodeBase.BaseSpawnerLogic
             CreateFirstBase();
         }
         
-        private void SpawnObjectAtMousePosition()
+        public void SpawnFlagAtMousePosition()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 

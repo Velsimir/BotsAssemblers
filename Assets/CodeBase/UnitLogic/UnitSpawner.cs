@@ -1,8 +1,7 @@
 using CodeBase.Services;
-using CodeBase.UnitLogic;
 using UnityEngine;
 
-namespace CodeBase.MainBase
+namespace CodeBase.UnitLogic
 {
     public class UnitSpawner
     {

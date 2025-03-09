@@ -4,7 +4,7 @@ namespace CodeBase.BaseSpawnerLogic
 {
     public class BaseFlag : MonoBehaviour
     {
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; private set; } = false;
 
         public void Initialize()
         {

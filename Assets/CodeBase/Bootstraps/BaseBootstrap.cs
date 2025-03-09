@@ -1,6 +1,7 @@
 using CodeBase.MainBase;
 using CodeBase.ResourceLogic;
 using CodeBase.Services;
+using CodeBase.UnitLogic;
 using TMPro;
 using UnityEngine;
 
