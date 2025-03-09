@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
+using UnityEngine;
 
 namespace CodeBase.MainBase
 {
@@ -12,6 +13,8 @@ namespace CodeBase.MainBase
         private readonly List<Unit> _allUnits;
         private readonly Queue<TaskCompletionSource<Unit>> _pendingRequests;
 
+        private Unit _unitBuilder;
+
         public UnitsHandler()
         {
             _freeUnits = new List<Unit>();
@@ -20,7 +23,21 @@ namespace CodeBase.MainBase
         }
 
         public bool HasFreeUnits => _freeUnits.Count > 0;
-
+        
+        public async Task SendUnitToBuildAsync(Vector3 position)
+        {
+            if (_unitBuilder == null)
+            {
+                _unitBuilder = await GetFreeUnitAsync();
+                _unitBuilder.GetPositionForNewBase(position);
+                _freeUnits.Remove(_unitBuilder);
+            }
+            else
+            {
+                _unitBuilder.GetPositionForNewBase(position);
+            }
+        }
+        
         public async Task SendUnitToMineAsync(Resource resource)
         {
             Unit unit = await GetFreeUnitAsync();

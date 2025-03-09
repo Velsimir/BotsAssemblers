@@ -12,7 +12,6 @@ namespace CodeBase.UnitLogic.StateMachine
         {
             base.Enter();
             Unit.Animator.StartIdling();
-            Unit.NavMesh.RefreshStartPosition();
             Unit.NavMesh.Stop();
         }
 

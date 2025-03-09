@@ -10,7 +10,7 @@ namespace CodeBase.Bootstraps
     public class GameBootstrap : MonoBehaviour
     {
         private ResourceSpawnerBootstrap _resourceSpawnerBootstrap;
-        private BuildingSpawner _buildingSpawner;
+        private BaseBuilder _baseBuilder;
         private CoroutinesHandler _coroutinesHandler;
         private ResourceHandler _resourceHandler;
         
@@ -23,9 +23,8 @@ namespace CodeBase.Bootstraps
             
             _resourceHandler = new ResourceHandler(_resourceSpawnerBootstrap.ResourceSpawner);
             
-            _buildingSpawner = GetComponent<BuildingSpawner>();
-            _buildingSpawner.Initialize(_resourceHandler);
-            
+            _baseBuilder = GetComponent<BaseBuilder>();
+            _baseBuilder.Initialize(_resourceHandler);
         }
     }
 }

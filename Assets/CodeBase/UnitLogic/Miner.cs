@@ -1,28 +1,31 @@
 using System;
 using System.Collections;
-using CodeBase.Interfaces;
 using CodeBase.Services;
 using UnityEngine;
+using Resource = CodeBase.ResourceLogic.Resource;
 
 namespace CodeBase.UnitLogic
 {
     public class Miner
     {
-        private IInteractable _collectable;
         private readonly Transform _minePoint;
         private readonly float _radius;
+        private readonly CoroutinesHandler _coroutinesHandler;
+        private readonly Transform _resourceHolder;
         
         private Coroutine _coroutineMine;
-        private CoroutinesHandler _coroutinesHandler;
-        
-        public event Action<IInteractable> MiningDone;
 
-        public Miner(Transform minePoint, float radius, CoroutinesHandler coroutineHandler)
+        public Miner(Transform minePoint, float radius, CoroutinesHandler coroutineHandler, Transform resourceHolder)
         {
             _minePoint = minePoint;
             _radius = radius;
             _coroutinesHandler = coroutineHandler;
+            _resourceHolder = resourceHolder;
         }
+        
+        public Resource Resource { get; private set; }
+
+        public event Action MiningDone;
 
         public void StartMine()
         {
@@ -37,25 +40,26 @@ namespace CodeBase.UnitLogic
 
         private IEnumerator Mine()
         {
+            yield return new WaitForSeconds(3f);
+            
             Collider[] hitColliders = Physics.OverlapSphere(_minePoint.position, _radius);
 
             foreach (Collider hitCollider in hitColliders)
             {
-                if (hitCollider.TryGetComponent(out IInteractable resource))
+                if (hitCollider.TryGetComponent(out Resource resource))
                 {
-                    _collectable = resource;
+                    Resource = resource;
+                    Resource.Interact(_resourceHolder);
                     break;
                 }
             }
 
-            if (_collectable == null)
+            if (Resource == null)
             {
                 throw new AggregateException("Couldn't find resource");
             }
             
-            yield return new WaitForSeconds(3f);
-
-            MiningDone?.Invoke(_collectable);
+            MiningDone?.Invoke();
         }
     }
 }

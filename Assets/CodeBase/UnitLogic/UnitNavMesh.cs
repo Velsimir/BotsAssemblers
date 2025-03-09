@@ -15,7 +15,7 @@ namespace CodeBase.UnitLogic
         {
             _agent = agent;
             _startPoint = startPoint;
-            RefreshStartPosition();
+            _agent.Warp(_startPoint);
         }
 
         public event Action DestinationReached;
@@ -28,9 +28,10 @@ namespace CodeBase.UnitLogic
             }
         }
 
-        public void RefreshStartPosition()
+        public void ReturnToBase()
         {
-            _agent.Warp(_startPoint);
+            SetDestination(_startPoint);
+            Run();
         }
 
         public void SetDestination(Vector3 destination)

@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace CodeBase.BaseSpawnerLogic
 {
-    public class BuildingSpawner : MonoBehaviour
+    public class BaseBuilder : MonoBehaviour
     {
+        private readonly Vector3 _spawnPositionForFirstBase = Vector3.zero;
         private BaseBootstrap _baseBootstrap;
         private ResourceHandler _resourceHandler;
 
@@ -13,17 +14,11 @@ namespace CodeBase.BaseSpawnerLogic
         {
             _baseBootstrap = Resources.Load<BaseBootstrap>("Prefabs/Base");
             _resourceHandler = resourceHandler;
-        }
-
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                SpawnObjectAtMousePosition();
-            }
+            
+            SpawnBase(_spawnPositionForFirstBase);
         }
         
-        private void SpawnObjectAtMousePosition()
+        /*private void SpawnObjectAtMousePosition()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -31,7 +26,7 @@ namespace CodeBase.BaseSpawnerLogic
             {
                 SpawnBase(hit.point);
             }
-        }
+        }*/
 
         private void SpawnBase(Vector3 position)
         {

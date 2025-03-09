@@ -41,6 +41,11 @@ namespace CodeBase.MainBase
             _resourceCollector.ValueChanged -= TrySpawnNewUnit;
         }
 
+        public void SendUnitToBuild(Vector3 position)
+        {
+            _unitsHandler.SendUnitToBuildAsync(position);
+        }
+
         private async void SendTaskToMine(Queue<Resource> resources)
         {
             while (_unitsHandler.HasFreeUnits && resources.Count > 0)
@@ -74,11 +79,6 @@ namespace CodeBase.MainBase
         private void CollectResource()
         {
             _resourceCollector.IncreaseResources();
-        }
-
-        private void RemoveUnitFromBase()
-        {
-            //unit.ResourceCollected -= CollectResource;
         }
     }
 }
