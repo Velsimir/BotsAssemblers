@@ -18,5 +18,8 @@ namespace CodeBase.UnitLogic.StateMachine
 
         public virtual void Exit()
         { }
+
+        public virtual void GetNextState()
+        { }
     }
 }

@@ -13,12 +13,35 @@ namespace CodeBase.UnitLogic.StateMachine
             base.Enter();
             Unit.Animator.StartRunning();
             Unit.NavMesh.Run();
+
+            Unit.NavMesh.DestinationReached += GetNextState;
         }
 
         public override void Exit()
         {
             base.Exit();
+            Unit.NavMesh.DestinationReached -= GetNextState;
             Unit.Animator.StopRunning();
+        }
+
+        public override void GetNextState()
+        {
+            base.GetNextState();
+
+            switch (Unit.CurrentTask)
+            {
+                case UnitTask.Mine:
+                    StateSwitcher.Switch<MineState>();
+                    break;
+                
+                case UnitTask.Collect:
+                    StateSwitcher.Switch<CollectState>();
+                    break;
+                
+                case UnitTask.Build:
+                    StateSwitcher.Switch<BuildState>();
+                    break;
+            }
         }
     }
 }

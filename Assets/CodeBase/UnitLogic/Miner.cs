@@ -9,16 +9,15 @@ namespace CodeBase.UnitLogic
     public class Miner
     {
         private readonly Transform _minePoint;
-        private readonly float _radius;
+        private readonly float _radiusToFindNearResource = 1f;
         private readonly CoroutinesHandler _coroutinesHandler;
         private readonly Transform _resourceHolder;
         
         private Coroutine _coroutineMine;
 
-        public Miner(Transform minePoint, float radius, CoroutinesHandler coroutineHandler, Transform resourceHolder)
+        public Miner(Transform minePoint, CoroutinesHandler coroutineHandler, Transform resourceHolder)
         {
             _minePoint = minePoint;
-            _radius = radius;
             _coroutinesHandler = coroutineHandler;
             _resourceHolder = resourceHolder;
         }
@@ -42,7 +41,7 @@ namespace CodeBase.UnitLogic
         {
             yield return new WaitForSeconds(3f);
             
-            Collider[] hitColliders = Physics.OverlapSphere(_minePoint.position, _radius);
+            Collider[] hitColliders = Physics.OverlapSphere(_minePoint.position, _radiusToFindNearResource);
 
             foreach (Collider hitCollider in hitColliders)
             {

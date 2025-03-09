@@ -6,7 +6,7 @@ namespace CodeBase.UnitLogic.StateMachine
 {
     public class UnitStateMachine : IStateSwitcher
     {
-        private List<IState> _states;
+        private readonly List<IState> _states;
         private IState _currentState;
 
         public UnitStateMachine(Unit unit)
@@ -15,7 +15,9 @@ namespace CodeBase.UnitLogic.StateMachine
             {
                 new IdleState(this, unit),
                 new RunningState(this, unit),
-                new MineState(this, unit)
+                new MineState(this, unit),
+                new BuildState(this, unit),
+                new CollectState(this, unit)
             };
             
             _currentState = _states[0];
@@ -24,7 +26,7 @@ namespace CodeBase.UnitLogic.StateMachine
         }
         
         public IState CurrentState => _currentState;
-
+        
         public void Switch<TState>() where TState : IState
         {
             IState state = _states.FirstOrDefault(state => state is TState);

@@ -8,17 +8,18 @@ namespace CodeBase.UnitLogic
     public class UnitNavMesh : IUpdatable
     {
         private readonly NavMeshAgent _agent;
-        private readonly Vector3 _startPoint;
         private Vector3 _destination;
 
-        public UnitNavMesh(NavMeshAgent agent, Vector3 startPoint)
+        public UnitNavMesh(NavMeshAgent agent, Vector3 basePosition)
         {
             _agent = agent;
-            _startPoint = startPoint;
-            _agent.Warp(_startPoint);
+            BasePosition = basePosition;
+            _agent.Warp(BasePosition);
         }
 
         public event Action DestinationReached;
+
+        public Vector3 BasePosition { get; private set; }
 
         public void Update(float deltaTime)
         {
@@ -26,12 +27,6 @@ namespace CodeBase.UnitLogic
             {
                 DestinationReached?.Invoke();
             }
-        }
-
-        public void ReturnToBase()
-        {
-            SetDestination(_startPoint);
-            Run();
         }
 
         public void SetDestination(Vector3 destination)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
@@ -41,22 +42,21 @@ namespace CodeBase.MainBase
             _resourceCollector.ValueChanged -= TrySpawnNewUnit;
         }
 
-        public void SendUnitToBuild(Vector3 position)
+        public async Task SendUnitToBuild(Vector3 position)
         {
-            _unitsHandler.SendUnitToBuildAsync(position);
+            await _unitsHandler.SendUnitToBuildAsync(position);
         }
 
-        private async void SendTaskToMine(Queue<Resource> resources)
+        private void SendTaskToMine(Queue<Resource> resources)
         {
-            while (_unitsHandler.HasFreeUnits && resources.Count > 0)
+            while (resources.Count > 0)
             {
                 Resource resource = resources.Dequeue();
 
-                if (_resourceHandler.TryGetResource(ref resource))
+                if (_resourceHandler.TryGetFreeResource(ref resource))
                 {
-                    await _unitsHandler.SendUnitToMineAsync(resource);
+                    _unitsHandler.SendTaskToMineAsync(resource.transform.position);
                 }
-  
             } 
         }
 

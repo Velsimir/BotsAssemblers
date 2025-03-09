@@ -1,9 +1,7 @@
 using System;
 using CodeBase.Interfaces;
-using CodeBase.ResourceLogic;
 using CodeBase.Services;
 using CodeBase.UnitLogic.StateMachine;
-using CodeBase.UnitLogic.UnitTaskLogic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,29 +13,28 @@ namespace CodeBase.UnitLogic
     {
         [SerializeField] private Transform _resourceHolder;
         
-        private readonly float _radiusMine = 1f;
-
+        private UnitStateMachine _stateMachine;
+        
         public event Action<Unit> ReturnedOnBase;
         public event Action ResourceCollected;
         public event Action<ISpawnable> Dissapear;
-
+        
         public UnitAnimator Animator { get; private set; }
         public UnitNavMesh NavMesh { get; private set; }
         public Miner Miner { get; private set; }
-        public UnitStateMachine StateMachine { get; private set; }
+        public UnitTask CurrentTask { get; private set; }
 
         public void Initialize(Vector3 basePosition, CoroutinesHandler coroutinesHandler)
         {
             Animator = new UnitAnimator(GetComponent<Animator>());
             NavMesh = new UnitNavMesh(GetComponent<NavMeshAgent>(), basePosition);
-            StateMachine = new UnitStateMachine(this);
-
-            Miner = new Miner(transform, _radiusMine, coroutinesHandler, _resourceHolder);
+            Miner = new Miner(transform, coroutinesHandler, _resourceHolder);
+            _stateMachine = new UnitStateMachine(this);
         }
 
         private void Update()
         {
-            if (StateMachine.CurrentState is RunningState)
+            if (_stateMachine.CurrentState is RunningState)
             {
                 NavMesh.Update(Time.deltaTime);
             }
@@ -48,16 +45,30 @@ namespace CodeBase.UnitLogic
             Dissapear?.Invoke(this);
         }
 
-        public void GetPositionForNewBase(Vector3 position)
+        public void ReleaseUnit()
         {
-            NavMesh.SetDestination(position);
-            StateMachine.Switch<RunningState>();
+            ReturnedOnBase?.Invoke(this);
+            ResourceCollected?.Invoke();
         }
 
-        public void TakeResourceToMine(Resource resource)
+        public void SendNewTask(Vector3 position, UnitTask currentTask)
         {
-            NavMesh.SetDestination(resource.transform.position);
-            StateMachine.Switch<RunningState>();
+            Debug.Log($"Sending new task");
+            CurrentTask = currentTask;
+            GetPositionToRun(position);
         }
+
+        private void GetPositionToRun(Vector3 position)
+        {
+            NavMesh.SetDestination(position);
+            _stateMachine.Switch<RunningState>();
+        }
+    }
+
+    public enum UnitTask
+    {
+        Mine,
+        Build,
+        Collect
     }
 }

@@ -4,5 +4,6 @@ namespace CodeBase.Interfaces
     {
         void Enter();
         void Exit();
+        void GetNextState();
     }
 }

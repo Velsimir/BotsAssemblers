@@ -18,7 +18,7 @@ namespace CodeBase.MainBase
             _resourceSpawner.ResourceSpawned += RemoveFromReserved;
         }
 
-        public bool TryGetResource(ref Resource resource)
+        public bool TryGetFreeResource(ref Resource resource)
         {
             if (_reservedResources.Contains(resource))
             {

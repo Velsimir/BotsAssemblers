@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
 
@@ -14,6 +12,7 @@ namespace CodeBase.MainBase
         private readonly Queue<TaskCompletionSource<Unit>> _pendingRequests;
 
         private Unit _unitBuilder;
+        private int _maxTask = 5;
 
         public UnitsHandler()
         {
@@ -21,28 +20,28 @@ namespace CodeBase.MainBase
             _allUnits = new List<Unit>();
             _pendingRequests = new Queue<TaskCompletionSource<Unit>>();
         }
-
-        public bool HasFreeUnits => _freeUnits.Count > 0;
         
         public async Task SendUnitToBuildAsync(Vector3 position)
         {
             if (_unitBuilder == null)
             {
                 _unitBuilder = await GetFreeUnitAsync();
-                _unitBuilder.GetPositionForNewBase(position);
                 _freeUnits.Remove(_unitBuilder);
             }
-            else
-            {
-                _unitBuilder.GetPositionForNewBase(position);
-            }
+            
+            _unitBuilder.SendNewTask(position, UnitTask.Build);
         }
         
-        public async Task SendUnitToMineAsync(Resource resource)
+        public async Task SendTaskToMineAsync(Vector3 position)
         {
+            if (_pendingRequests.Count > _maxTask)
+                return;
+            
             Unit unit = await GetFreeUnitAsync();
-            unit.TakeResourceToMine(resource);
+            unit.SendNewTask(position, UnitTask.Mine);
+            
             _freeUnits.Remove(unit);
+            
             unit.ReturnedOnBase += AddFreeUnit;
             unit.ReturnedOnBase += TrySendFreeUnitNewTask;
         }
@@ -51,6 +50,8 @@ namespace CodeBase.MainBase
         {
             _freeUnits.Add(unit);
             _allUnits.Add(unit);
+
+            TrySendFreeUnitNewTask(unit);
         }
 
         private Task<Unit> GetFreeUnitAsync()

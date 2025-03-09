@@ -13,12 +13,22 @@ namespace CodeBase.UnitLogic.StateMachine
             base.Enter();
             Unit.Animator.StartMining();
             Unit.Miner.StartMine();
+            Unit.Miner.MiningDone += GetNextState;
         }
 
         public override void Exit()
         {
             base.Exit();
+            Unit.Miner.MiningDone -= GetNextState;
             Unit.Animator.StopMining();
+        }
+
+        public override void GetNextState()
+        {
+            base.GetNextState();
+            
+            Unit.SendNewTask(Unit.NavMesh.BasePosition, UnitTask.Collect);
+            StateSwitcher.Switch<RunningState>();
         }
     }
 }
