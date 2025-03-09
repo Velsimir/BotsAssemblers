@@ -10,14 +10,18 @@ namespace CodeBase.MainBase
     {
         [SerializeField] private BoxCollider _spawnUnitArea;
 
+        private const int MinUnitsToBuildNewBase = 3;
+        private const int ResourcesToSpawnNewUnit = 3;
+        
         private ResourceCollector _resourceCollector;
         private Scanner _scanner;
         private UnitSpawner _spawner;
         private UnitsHandler _unitsHandler;
         private ResourceHandler _resourceHandler;
-        private int _resourcesToSpawnNewUnit;
+        
+        public bool IsEnoughUnits => _unitsHandler.AllUnits.Count >= ResourcesToSpawnNewUnit;
 
-        public void Initialize(Scanner scanner, UnitSpawner spawner, int resourcesToSpawnNewUnit, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
+        public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
         {
             _spawner = spawner;
 
@@ -31,8 +35,6 @@ namespace CodeBase.MainBase
 
             _unitsHandler = new UnitsHandler();
 
-            _resourcesToSpawnNewUnit = resourcesToSpawnNewUnit;
-
             SpawnUnit();
         }
 
@@ -40,10 +42,21 @@ namespace CodeBase.MainBase
         {
             _scanner.ScanFinished -= SendTaskToMine;
             _resourceCollector.ValueChanged -= TrySpawnNewUnit;
+
+            foreach (var unit in _unitsHandler.AllUnits)
+            {
+                unit.ResourceCollected -= CollectResource;
+            }
         }
 
         public async Task SendUnitToBuild(Vector3 position)
         {
+            if (_unitsHandler.AllUnits.Count < MinUnitsToBuildNewBase)
+            {
+                Debug.Log("Слишком мало юнитов");
+                return;
+            }
+
             await _unitsHandler.SendUnitToBuildAsync(position);
         }
 
@@ -62,10 +75,10 @@ namespace CodeBase.MainBase
 
         private void TrySpawnNewUnit()
         {
-            if (_resourceCollector.CollectedResources >= _resourcesToSpawnNewUnit)
+            if (_resourceCollector.CollectedResources >= ResourcesToSpawnNewUnit)
             {
                 SpawnUnit();
-                _resourceCollector.Spend(_resourcesToSpawnNewUnit);
+                _resourceCollector.Spend(ResourcesToSpawnNewUnit);
             }
         }
 

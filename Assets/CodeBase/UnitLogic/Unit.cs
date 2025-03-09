@@ -17,6 +17,7 @@ namespace CodeBase.UnitLogic
         
         public event Action<Unit> ReturnedOnBase;
         public event Action ResourceCollected;
+        public event Action BuildingDone;
         public event Action<ISpawnable> Dissapear;
         
         public UnitAnimator Animator { get; private set; }
@@ -43,6 +44,12 @@ namespace CodeBase.UnitLogic
         private void OnDisable()
         {
             Dissapear?.Invoke(this);
+        }
+
+        public void Deactivate()
+        {
+            BuildingDone?.Invoke();
+            gameObject.SetActive(false);
         }
 
         public void ReleaseUnit()

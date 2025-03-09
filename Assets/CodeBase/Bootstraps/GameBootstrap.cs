@@ -1,5 +1,6 @@
 using CodeBase.BaseSpawnerLogic;
 using CodeBase.MainBase;
+using CodeBase.MouseInteractLogic;
 using CodeBase.Services;
 using UnityEngine;
 
@@ -7,8 +8,10 @@ namespace CodeBase.Bootstraps
 {
     [RequireComponent(typeof(ResourceSpawnerBootstrap))]
     [RequireComponent(typeof(CoroutinesHandler))]
+    [RequireComponent(typeof(CursorInteractLogic))]
     public class GameBootstrap : MonoBehaviour
     {
+        private CursorInteractLogic _cursorInteractLogic;
         private ResourceSpawnerBootstrap _resourceSpawnerBootstrap;
         private BaseBuilder _baseBuilder;
         private CoroutinesHandler _coroutinesHandler;
@@ -23,8 +26,9 @@ namespace CodeBase.Bootstraps
             
             _resourceHandler = new ResourceHandler(_resourceSpawnerBootstrap.ResourceSpawner);
             
+            _cursorInteractLogic = GetComponent<CursorInteractLogic>();
             _baseBuilder = GetComponent<BaseBuilder>();
-            _baseBuilder.Initialize(_resourceHandler);
+            _baseBuilder.Initialize(_resourceHandler, _cursorInteractLogic);
         }
     }
 }

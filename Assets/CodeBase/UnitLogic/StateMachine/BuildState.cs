@@ -13,6 +13,7 @@ namespace CodeBase.UnitLogic.StateMachine
         {
             base.Enter();
             Debug.Log("Enter BuildingState");
+            Unit.Deactivate();
         }
 
         public override void Exit()

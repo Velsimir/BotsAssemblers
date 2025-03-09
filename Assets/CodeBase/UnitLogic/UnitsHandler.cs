@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace CodeBase.UnitLogic
@@ -8,6 +7,7 @@ namespace CodeBase.UnitLogic
     public class UnitsHandler 
     {
         private readonly List<Unit> _freeUnits;
+        private readonly List<Unit> _allUnits;
         private readonly Queue<TaskCompletionSource<Unit>> _pendingRequests;
         private TaskCompletionSource<Unit> _requestToBuild;
         private readonly int _maxTask = 5;
@@ -17,8 +17,11 @@ namespace CodeBase.UnitLogic
         public UnitsHandler()
         {
             _freeUnits = new List<Unit>();
+            _allUnits = new List<Unit>();
             _pendingRequests = new Queue<TaskCompletionSource<Unit>>();
         }
+        
+        public List<Unit> AllUnits => _allUnits;
         
         public async Task SendUnitToBuildAsync(Vector3 position)
         {
@@ -49,6 +52,7 @@ namespace CodeBase.UnitLogic
         public void AddNewUnit(Unit unit)
         {
             _freeUnits.Add(unit);
+            _allUnits.Add(unit);
 
             TrySendFreeUnitNewTask(unit);
         }

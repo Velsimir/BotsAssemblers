@@ -26,7 +26,7 @@ namespace CodeBase.Bootstraps
             UnitSpawner unitSpawner = new UnitSpawner(_baseData.UnitPrefab, coroutinesHandler);
             
             _scanner = new Scanner(_baseData.RadiusToSearchResources, _baseData.ScanDelay, _base.transform, coroutinesHandler);
-            _base.Initialize(_scanner, unitSpawner, _baseData.ResourcesToSpawnNewUnit, resourceCollector, resourceHandler);
+            _base.Initialize(_scanner, unitSpawner, resourceCollector, resourceHandler);
         }
     }
 }

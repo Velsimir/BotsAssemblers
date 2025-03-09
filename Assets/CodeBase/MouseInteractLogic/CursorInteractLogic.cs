@@ -1,68 +1,60 @@
-using CodeBase.BaseSpawnerLogic;
+using System;
 using CodeBase.MainBase;
 using UnityEngine;
 
-public class CursorInteractLogic : MonoBehaviour
+namespace CodeBase.MouseInteractLogic
 {
-    [SerializeField] private BaseBuilder _baseBuilder;
+    public class CursorInteractLogic : MonoBehaviour
+    {
+        private Camera _camera;
+
+        public event Action<RaycastHit> LeftClick;
+        public event Action<RaycastHit> RightClick;
     
-    private Camera _camera;
-    private Base _currentBase;
-
-    private void Awake()
-    {
-        _camera = GetComponent<Camera>();
-    }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        private void Awake()
         {
-            SelectBase();
+            _camera = GetComponent<Camera>();
         }
 
-        if (Input.GetMouseButtonDown(1) && _currentBase != null)
+        private void Update()
         {
-            _currentBase.SendUnitToBuild(GetMousePositionByRayCast(GetRayCastHitByClick()));
-            _baseBuilder.SpawnFlagAtMousePosition();
-        }
-    }
+            if (Input.GetMouseButtonDown(0))
+            {
+                LeftClick?.Invoke(GetRayCastHitByClick());
+                //SelectBase();
+            }
 
-    private void SelectBase()
-    {
-        RaycastHit hit = GetRayCastHitByClick();
-            
-        GetMousePositionByRayCast(hit);
-            
-        if (TrySelectBase(hit, out Base currentBase))
+            if (Input.GetMouseButtonDown(1))
+            {
+                RightClick?.Invoke(GetRayCastHitByClick());
+                //_currentBase.SendUnitToBuild(GetMousePositionByRayCast(GetRayCastHitByClick()), _baseBuilder);
+            }
+        }
+
+        private RaycastHit GetRayCastHitByClick()
         {
-            _currentBase = currentBase;
-        }
-    }
-
-    private RaycastHit GetRayCastHitByClick()
-    {
-        Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit);
+            Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit);
         
-        return hit;
-    }
-
-    private Vector3 GetMousePositionByRayCast(RaycastHit hit)
-    {
-        return hit.point;
-    }
-
-    private bool TrySelectBase(RaycastHit hit, out Base selectedBase)
-    {
-        if (hit.collider.gameObject.TryGetComponent(out Base @base))
-        {
-            selectedBase = @base;
-            return true;
+            return hit;
         }
-        else
+
+        private Vector3 GetMousePositionByRayCast(RaycastHit hit)
         {
-            selectedBase = null;
-            return false;
+            return hit.point;
+        }
+
+        private bool TrySelectBase(RaycastHit hit, out Base selectedBase)
+        {
+            if (hit.collider.gameObject.TryGetComponent(out Base @base))
+            {
+                selectedBase = @base;
+                return true;
+            }
+            else
+            {
+                selectedBase = null;
+                return false;
+            }
         }
     }
 }
