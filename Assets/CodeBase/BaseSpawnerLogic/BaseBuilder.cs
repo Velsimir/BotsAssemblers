@@ -1,4 +1,3 @@
-using System;
 using CodeBase.Bootstraps;
 using CodeBase.MainBase;
 using CodeBase.MouseInteractLogic;
@@ -9,22 +8,29 @@ namespace CodeBase.BaseSpawnerLogic
 {
     public class BaseBuilder : MonoBehaviour
     {
-        private readonly Vector3 _spawnPositionForFirstBase = Vector3.zero;
-        private BaseBootstrap _baseBootstrapPrefab;
-        private ResourceHandler _resourceHandler;
+        private BaseBootstrap _baseBootstrap;
         private CursorInteractLogic _cursorInteractLogic;
+        private ResourceHandler _resourceHandler;
+        private UnitSpawner _unitSpawner;
         private Base _currentBase;
         private Unit _builderUnit;
 
-        public void Initialize(ResourceHandler resourceHandler, CursorInteractLogic cursorInteractLogic)
+        public void Initialize(ResourceHandler resourceHandler, CursorInteractLogic cursorInteractLogic, UnitSpawner unitSpawner)
         {
-            _baseBootstrapPrefab = Resources.Load<BaseBootstrap>("Prefabs/Base");
+            _baseBootstrap = Resources.Load<BaseBootstrap>("Prefabs/Base");
             _resourceHandler = resourceHandler;
             _cursorInteractLogic = cursorInteractLogic;
+            _unitSpawner = unitSpawner;
+            
             _cursorInteractLogic.LeftClick += TrySelectBase;
             _cursorInteractLogic.RightClick += TrySpawnBase;
 
-            InstantiateAndInitializeBase(_spawnPositionForFirstBase);
+            InstantiateAndInitializeBase(Vector3.zero);
+        }
+
+        private void OnDisable()
+        {
+            _cursorInteractLogic.LeftClick -= TrySelectBase;
         }
 
         public void TakeUnitBuilder(Unit unit)
@@ -42,11 +48,6 @@ namespace CodeBase.BaseSpawnerLogic
             {
                 _currentBase.SendUnitToBuild(hit.point, this);
             }
-        }
-
-        private void OnDisable()
-        {
-            _cursorInteractLogic.LeftClick -= TrySelectBase;
         }
 
         private void TrySelectBase(RaycastHit hit)
@@ -68,8 +69,8 @@ namespace CodeBase.BaseSpawnerLogic
 
         private void InstantiateAndInitializeBase(Vector3 position)
         {
-            _baseBootstrapPrefab = Instantiate(_baseBootstrapPrefab, position, Quaternion.identity);
-            _baseBootstrapPrefab.Initialize(_resourceHandler);
+            BaseBootstrap baseBootstrapPrefab = Instantiate(_baseBootstrap, position, Quaternion.identity);
+            baseBootstrapPrefab.Initialize(_resourceHandler, _unitSpawner);
 
             if (_builderUnit != null)
             {

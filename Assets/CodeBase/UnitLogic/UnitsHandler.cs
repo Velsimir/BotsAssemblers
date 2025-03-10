@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.Interfaces;
 using UnityEngine;
 
 namespace CodeBase.UnitLogic
@@ -35,10 +36,10 @@ namespace CodeBase.UnitLogic
             
             BuilderUnit.SendNewTask(position, UnitTask.Build);
 
-            BuilderUnit = null;
+            BuilderUnit.Dissapear += ForgetUnit;
             _requestToBuild = null;
         }
-        
+
         public async Task SendTaskToMineAsync(Vector3 position)
         {
             if (_pendingRequests.Count > _maxTask)
@@ -104,6 +105,12 @@ namespace CodeBase.UnitLogic
                 TaskCompletionSource<Unit> newTask = _pendingRequests.Dequeue();
                 newTask.SetResult(unit);
             }
+        }
+
+        private void ForgetUnit(ISpawnable unit)
+        {
+            BuilderUnit.Dissapear -= ForgetUnit;
+            BuilderUnit = null;
         }
     }
 }

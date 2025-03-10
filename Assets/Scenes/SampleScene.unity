@@ -1232,7 +1232,6 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
-  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1372,19 +1371,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 10
   _edgeScrollSize: 20
---- !u!114 &330585549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2879cd8b8b325ce41a3ad076280c4a7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseBuilder: {fileID: 1066288783}
 --- !u!1 &350752425
 GameObject:
   m_ObjectHideFlags: 0
@@ -5047,6 +5033,7 @@ GameObject:
   - component: {fileID: 1066288779}
   - component: {fileID: 1066288781}
   - component: {fileID: 1066288783}
+  - component: {fileID: 1066288784}
   m_Layer: 0
   m_Name: Bootstraps
   m_TagString: Untagged
@@ -5118,6 +5105,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab27ee0374654f2ab956f81213b842e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1066288784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066288776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2879cd8b8b325ce41a3ad076280c4a7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!43 &1167541189

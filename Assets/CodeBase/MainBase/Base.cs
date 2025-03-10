@@ -50,11 +50,11 @@ namespace CodeBase.MainBase
 
         public async Task SendUnitToBuild(Vector3 position, BaseBuilder baseBuilder)
         {
-            if (_unitsHandler.AllUnits.Count < MinUnitsToBuildNewBase)
+            /*if (_unitsHandler.AllUnits.Count < MinUnitsToBuildNewBase)
             {
                 Debug.Log("Слишком мало юнитов");
                 return;
-            }
+            }*/
 
             SetFlag(position);
             await _unitsHandler.SendUnitToBuildAsync(position);

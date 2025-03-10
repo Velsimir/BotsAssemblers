@@ -2,7 +2,9 @@ using CodeBase.BaseSpawnerLogic;
 using CodeBase.MainBase;
 using CodeBase.MouseInteractLogic;
 using CodeBase.Services;
+using CodeBase.UnitLogic;
 using UnityEngine;
+using Resource = CodeBase.ResourceLogic.Resource;
 
 namespace CodeBase.Bootstraps
 {
@@ -19,16 +21,19 @@ namespace CodeBase.Bootstraps
         
         private void Awake()
         {
-            _coroutinesHandler = GetComponent<CoroutinesHandler>();
+            Resource resourcePrefab = Resources.Load<Resource>("Prefabs/Resource");
+            Unit unitPrefab = Resources.Load<Unit>("Prefabs/Unit");
             
+            _coroutinesHandler = GetComponent<CoroutinesHandler>();
+
             _resourceSpawnerBootstrap = GetComponent<ResourceSpawnerBootstrap>();
-            _resourceSpawnerBootstrap.Initialize(_coroutinesHandler, this);
+            _resourceSpawnerBootstrap.Initialize(_coroutinesHandler, new Spawner<Resource>(resourcePrefab));
             
             _resourceHandler = new ResourceHandler(_resourceSpawnerBootstrap.ResourceSpawner);
             
             _cursorInteractLogic = GetComponent<CursorInteractLogic>();
             _baseBuilder = GetComponent<BaseBuilder>();
-            _baseBuilder.Initialize(_resourceHandler, _cursorInteractLogic);
+            _baseBuilder.Initialize(_resourceHandler, _cursorInteractLogic, new UnitSpawner(unitPrefab, _coroutinesHandler));
         }
     }
 }
