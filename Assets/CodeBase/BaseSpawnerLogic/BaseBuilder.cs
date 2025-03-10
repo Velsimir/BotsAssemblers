@@ -46,7 +46,7 @@ namespace CodeBase.BaseSpawnerLogic
             
             if (hit.collider.gameObject.TryGetComponent(out ConstructionZone constructionZone))
             {
-                _currentBase.SendUnitToBuild(hit.point, this);
+                _currentBase.SendUnitToBuild(hit.point);
             }
         }
 

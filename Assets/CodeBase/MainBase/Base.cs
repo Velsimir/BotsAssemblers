@@ -4,29 +4,30 @@ using CodeBase.BaseSpawnerLogic;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 namespace CodeBase.MainBase
 {
     public class Base : MonoBehaviour
     {
         [SerializeField] private BoxCollider _spawnUnitArea;
+        [SerializeField] private BaseFlag _flag;
 
         private const int MinUnitsToBuildNewBase = 3;
         private const int ResourcesToSpawnNewUnit = 3;
+        private const int ResourcesToSpawnNewBase = 5;
         
         private ResourceCollector _resourceCollector;
         private Scanner _scanner;
         private UnitSpawner _spawner;
         private UnitsHandler _unitsHandler;
         private ResourceHandler _resourceHandler;
-        private BaseFlag _flag;
+        private Stage _currentStage;
         
         public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
         {
             _spawner = spawner;
-            _flag = Resources.Load<BaseFlag>("Prefabs/Flag");
             _resourceCollector = resourceCollector;
-            _resourceCollector.ValueChanged += TrySpawnNewUnit;
 
             _resourceHandler = resourceHandler;
             
@@ -35,42 +36,39 @@ namespace CodeBase.MainBase
 
             _unitsHandler = new UnitsHandler();
             SpawnUnit();
+
+            _flag = Instantiate(_flag);
+            _flag.gameObject.SetActive(false);
+            
+            _currentStage = Stage.Mining;
         }
 
         private void OnDisable()
         {
             _scanner.ScanFinished -= SendTaskToMine;
-            _resourceCollector.ValueChanged -= TrySpawnNewUnit;
 
             foreach (var unit in _unitsHandler.AllUnits)
             {
-                unit.ResourceCollected -= CollectResource;
+                unit.ResourceCollected -= TrySpendCollectedResource;
             }
         }
 
-        public async Task SendUnitToBuild(Vector3 position, BaseBuilder baseBuilder)
+        public void SendUnitToBuild(Vector3 position)
         {
-            /*if (_unitsHandler.AllUnits.Count < MinUnitsToBuildNewBase)
+            if (_unitsHandler.AllUnits.Count >= MinUnitsToBuildNewBase)
             {
-                Debug.Log("Слишком мало юнитов");
-                return;
-            }*/
-
-            SetFlag(position);
-            await _unitsHandler.SendUnitToBuildAsync(position);
-            baseBuilder.TakeUnitBuilder(_unitsHandler.BuilderUnit);
-        }
-        
-        private void SetFlag(Vector3 position)
-        {
-            if (_flag.IsInitialized == false)
-            {
-                _flag = Instantiate(_flag);
-                _flag.Initialize();
+                if (_currentStage == Stage.Mining)
+                {
+                    _currentStage = Stage.Building;
+                    _flag.gameObject.SetActive(true);
+                }
+                
+                _flag.Move(position);
             }
-            
-            _flag.gameObject.SetActive(true);
-            _flag.Move(position);
+            else
+            {
+                Debug.Log("Not enough units to build");
+            }
         }
 
         private void SendTaskToMine(Queue<Resource> resources)
@@ -86,6 +84,22 @@ namespace CodeBase.MainBase
             } 
         }
 
+        private void TrySpendCollectedResource()
+        {
+            _resourceCollector.IncreaseResources();
+            
+            switch (_currentStage)
+            {
+                case Stage.Mining:
+                    TrySpawnNewUnit();
+                    break;
+                
+                case Stage.Building:
+                    TrySendUnitTuBuild();
+                    break;
+            }
+        }
+
         private void TrySpawnNewUnit()
         {
             if (_resourceCollector.CollectedResources >= ResourcesToSpawnNewUnit)
@@ -98,14 +112,26 @@ namespace CodeBase.MainBase
         private void SpawnUnit()
         {
             Unit unit = _spawner.GetUnit(_spawnUnitArea);
-            unit.ResourceCollected += CollectResource;
+            unit.ResourceCollected += TrySpendCollectedResource;
             _unitsHandler.AddNewUnit(unit);
         }
 
-        private void CollectResource()
+        private async Task TrySendUnitTuBuild()
         {
-            _resourceCollector.IncreaseResources();
+            if (_resourceCollector.CollectedResources >= ResourcesToSpawnNewBase)
+            {
+                _resourceCollector.Spend(ResourcesToSpawnNewBase);
+                _currentStage = Stage.Mining;
+                
+                await _unitsHandler.SendUnitToBuildAsync(_flag.transform.position);
+            }
         }
+    }
+
+    public enum Stage
+    {
+        Mining,
+        Building,
     }
 }
         

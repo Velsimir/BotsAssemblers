@@ -27,7 +27,7 @@ namespace CodeBase.UnitLogic
         
         public async Task SendUnitToBuildAsync(Vector3 position)
         {
-            if (BuilderUnit == null)
+            if (_requestToBuild == null && BuilderUnit == null)
             {
                 BuilderUnit = await GetFreeUnitAsync(true);
                 _freeUnits.Remove(BuilderUnit);
