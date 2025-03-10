@@ -1,3 +1,4 @@
+using CodeBase.BaseSpawnerLogic;
 using CodeBase.MainBase;
 using CodeBase.Services;
 using CodeBase.UnitLogic;
@@ -14,7 +15,7 @@ namespace CodeBase.Bootstraps
         private Base _base;
         private Scanner _scanner;
 
-        public void Initialize(ResourceHandler resourceHandler, UnitSpawner unitSpawner)
+        public void Initialize(ResourceHandler resourceHandler, UnitSpawner unitSpawner, BaseBuilder baseBuilder)
         {
             _base = GetComponent<Base>();
             
@@ -25,7 +26,7 @@ namespace CodeBase.Bootstraps
             
             _scanner = new Scanner(_base.transform, coroutinesHandler);
             
-            _base.Initialize(_scanner, unitSpawner, resourceCollector, resourceHandler);
+            _base.Initialize(_scanner, unitSpawner, resourceCollector, resourceHandler, baseBuilder);
         }
     }
 }

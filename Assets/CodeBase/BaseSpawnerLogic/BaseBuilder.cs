@@ -70,7 +70,7 @@ namespace CodeBase.BaseSpawnerLogic
         private void InstantiateAndInitializeBase(Vector3 position)
         {
             BaseBootstrap baseBootstrapPrefab = Instantiate(_baseBootstrap, position, Quaternion.identity);
-            baseBootstrapPrefab.Initialize(_resourceHandler, _unitSpawner);
+            baseBootstrapPrefab.Initialize(_resourceHandler, _unitSpawner, this);
 
             if (_builderUnit != null)
             {

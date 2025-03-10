@@ -22,10 +22,12 @@ namespace CodeBase.MainBase
         private UnitSpawner _spawner;
         private UnitsHandler _unitsHandler;
         private ResourceHandler _resourceHandler;
+        private BaseBuilder _baseBuilder;
         private Stage _currentStage;
         
-        public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler)
+        public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler, BaseBuilder baseBuilder)
         {
+            _baseBuilder = baseBuilder;
             _spawner = spawner;
             _resourceCollector = resourceCollector;
 
@@ -124,6 +126,7 @@ namespace CodeBase.MainBase
                 _currentStage = Stage.Mining;
                 
                 await _unitsHandler.SendUnitToBuildAsync(_flag.transform.position);
+                _baseBuilder.TakeUnitBuilder(_unitsHandler.BuilderUnit);
             }
         }
     }
