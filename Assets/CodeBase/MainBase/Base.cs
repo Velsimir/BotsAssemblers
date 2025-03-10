@@ -4,7 +4,6 @@ using CodeBase.BaseSpawnerLogic;
 using CodeBase.ResourceLogic;
 using CodeBase.UnitLogic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
 namespace CodeBase.MainBase
 {
@@ -13,7 +12,7 @@ namespace CodeBase.MainBase
         [SerializeField] private BoxCollider _spawnUnitArea;
         [SerializeField] private BaseFlag _flag;
 
-        private const int MinUnitsToBuildNewBase = 3;
+        private const int MinUnitsToBuildNewBase = 2;
         private const int ResourcesToSpawnNewUnit = 3;
         private const int ResourcesToSpawnNewBase = 5;
         
@@ -23,6 +22,7 @@ namespace CodeBase.MainBase
         private UnitsHandler _unitsHandler;
         private ResourceHandler _resourceHandler;
         private BaseBuilder _baseBuilder;
+        private Unit _builderUnit;
         private Stage _currentStage;
         
         public void Initialize(Scanner scanner, UnitSpawner spawner, ResourceCollector resourceCollector, ResourceHandler resourceHandler, BaseBuilder baseBuilder)
@@ -126,8 +126,19 @@ namespace CodeBase.MainBase
                 _currentStage = Stage.Mining;
                 
                 await _unitsHandler.SendUnitToBuildAsync(_flag.transform.position);
-                _baseBuilder.TakeUnitBuilder(_unitsHandler.BuilderUnit);
+                
+                _builderUnit = _unitsHandler.BuilderUnit;
+                _builderUnit.BuildingDone += DeactivateFlag;
+                
+                _baseBuilder.TakeUnitBuilder(_builderUnit);
             }
+        }
+
+        private void DeactivateFlag()
+        {
+            _flag.gameObject.SetActive(false);
+            _builderUnit.BuildingDone -= DeactivateFlag;
+            _builderUnit = null;
         }
     }
 
